@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Login</title>
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/dashboard.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/">promt</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-container">
+
+            <form class="form-horizontal" method="post">
+                <fieldset>
+                    <legend>Login</legend>
+                    <p>Don't you have a account? <a href="/signup">Sign up</a></p>
+                    <label class="control-label">Username</label>
+                    <input type="text" class="form-control" name="username" placeholder="Username"  value="{{username}}" required autofocus>
+                    <label class="control-label">Password</label>
+                    <input type="password" class="form-control" name="password" placeholder="Password" required>
+                    <p></p>
+                    {% if login_error %}
+                    <div class="alert alert-dismissable alert-danger">
+                        {{login_error}}
+                    </div>
+                    {% endif %}
+                    <p class="pull-right">
+                        <button type="submit" class="align-right btn btn-primary">Login</button>
+                    </p>
+                </fieldset>
+            </form>
+
+        </div>
+
+    </body>
+</html>
