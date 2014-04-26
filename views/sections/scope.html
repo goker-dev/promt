@@ -1,0 +1,20 @@
+<form class="form-horizontal" method="post">
+    <fieldset>
+        <legend>Scope</legend>
+        <label class="control-label">Title</label>
+        <input type="text" class="form-control" name="title" size="120" value="{{title}}" required>
+        <label class="control-label">Description</label>
+        <textarea name="description" class="form-control" cols="120" rows="4">{{decription}}</textarea>
+        <label class="control-label">Tags</label>
+        <input type="text" class="form-control" name="tags" size="120" value="{{tags}}" />
+        <p></p>
+        {% if errors %}
+        <div class="alert alert-dismissable alert-danger">
+            {{errors}}
+        </div>
+        {% endif %}
+        <p class="pull-right">
+            <button type="submit" class="btn btn-primary">Update the project</button>
+        </p>
+    </fieldset>
+</form>
