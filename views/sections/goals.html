@@ -1,20 +1,50 @@
-<form class="form-horizontal" method="post">
+<legend>Goals</legend>
+<div class="table table-responsive">
+    <table class="table table-striped table-bordered table-condensed table-hover">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Project Goal</th>
+                <th>Priorities</th>
+                <th>Comment/Description</th>
+            </tr>
+        </thead>
+        <tr>
+            <td>Örnek</td>
+            <td>Örnek</td>
+            <td>Örnek</td>
+            <td>Örnek</td>
+        </tr>
+    </table>
+</div>
+{% if errors %}
+<div class="alert alert-dismissable alert-danger">
+    {{errors}}
+</div>
+{% endif %}
+<form class="form-inline" method="post">
     <fieldset>
-        <legend>Goals</legend>
-        <label class="control-label">Title</label>
-        <input type="text" class="form-control" name="title" size="120" value="{{title}}" required>
-        <label class="control-label">Description</label>
-        <textarea name="description" class="form-control" cols="120" rows="4">{{decription}}</textarea>
-        <label class="control-label">Tags</label>
-        <input type="text" class="form-control" name="tags" size="120" value="{{tags}}" />
-        <p></p>
-        {% if errors %}
-        <div class="alert alert-dismissable alert-danger">
-            {{errors}}
+        <div class="form-group">
+            <label class="sr-only" for="type">Type</label>
+            <select class="form-control">
+                <option value="">Functional Goal</option>
+                <option>Bussines Goal</option>
+                <option>Technological Goal</option>
+            </select>
         </div>
-        {% endif %}
-        <p class="pull-right">
-            <button type="submit" class="btn btn-primary">Update the project</button>
-        </p>
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Project GoAL">
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="Priorities">Priorities</label>
+            <input type="text" for="Priorities" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="comment">Comment / Description</label>
+            <input type="text" for="comment" class="form-control">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-default">Add goal</button>
+        </div>
     </fieldset>
 </form>
