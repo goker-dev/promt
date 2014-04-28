@@ -1,20 +1,75 @@
-<form class="form-horizontal" method="post">
-    <fieldset>
-        <legend>Scope</legend>
-        <label class="control-label">Title</label>
-        <input type="text" class="form-control" name="title" size="120" value="{{title}}" required>
-        <label class="control-label">Description</label>
-        <textarea name="description" class="form-control" cols="120" rows="4">{{decription}}</textarea>
-        <label class="control-label">Tags</label>
-        <input type="text" class="form-control" name="tags" size="120" value="{{tags}}" />
-        <p></p>
-        {% if errors %}
-        <div class="alert alert-dismissable alert-danger">
-            {{errors}}
-        </div>
-        {% endif %}
-        <p class="pull-right">
-            <button type="submit" class="btn btn-primary">Update the project</button>
-        </p>
-    </fieldset>
-</form>
+    <form class="form-inline" method="post">
+        <fieldset>
+            <legend>Scope</legend>
+            <h4>Included</h4>
+            <div class="table table-responsive">
+        <table class="table table-striped table-bordered table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Included Scope</th>
+                </tr>
+            </thead>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    {% if errors %}
+    <div class="alert alert-dismissable alert-danger">
+        {{errors}}
+    </div>
+    {% endif %}
+    <form class="form-inline" method="post">
+        <fieldset>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="#">
+            </div>
+            <div class="form-group">
+                <input type="text" placeholder="Scope" class="form-control">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-default">Add scope</button>
+            </div>
+        </fieldset>
+    </form>
+            <h4>Excluded</h4>
+            <div class="table table-responsive">
+        <table class="table table-striped table-bordered table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Excluded Scope</th>
+                </tr>
+            </thead>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    {% if errors %}
+    <div class="alert alert-dismissable alert-danger">
+        {{errors}}
+    </div>
+    {% endif %}
+    <form class="form-inline" method="post">
+        <fieldset>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="#">
+            </div>
+            <div class="form-group">
+                <input type="text" placeholder="Scope" class="form-control">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-default">Add scope</button>
+            </div>
+        </fieldset>
+    </form>
+        </fieldset>
+    </form>
