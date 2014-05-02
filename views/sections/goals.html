@@ -3,7 +3,6 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>#</th>
                 <th>Project Goal</th>
                 <th>Priorities</th>
                 <th>Comment/Description</th>
@@ -11,31 +10,55 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="info">
+            <tr class="info functional">
+                <td>Functional Goals</td>
                 <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info strategic">
+                <td>Strategic Goals</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info business">
+                <td>Business Goals</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info technological">
+                <td>Technological Goals</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info quality">
                 <td>Quality Goals</td>
-                <td>2</td>
+                <td></td>
                 <td></td>
                 <td></td>
             </tr>
-            <tr>
+            <tr class="info organizational">
+                <td>Organizational Goals</td>
                 <td></td>
-                <td>Quality Goal 1</td>
                 <td></td>
                 <td></td>
-                <td><a class="btn btn-default btn-sm">Remove</a>
-                </td>
             </tr>
-
-            <tr class="info">
+            <tr class="info other">
+                <td>Other Goals</td>
                 <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info constraints">
                 <td>Constraints</td>
                 <td></td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
-                <td></td>
                 <td>environmental</td>
                 <td></td>
                 <td></td>
@@ -49,13 +72,13 @@
     {{errors}}
 </div>
 {% endif %}
-<form class="form-inline" method="post">
+<form class="form-inline ajax" method="put" action="./goals/add">
     <fieldset>
         <div class="form-group">
-            <select class="form-control">
+            <select class="form-control" name="type">
                 <option value="functional">Functional Goals</option>
                 <option value="strategic">Strategic Goals</option>
-                <option value="bussines">Bussines Goals</option>
+                <option value="business">Business Goals</option>
                 <option value="technological">Technological Goals</option>
                 <option value="quality">Quality Goals</option>
                 <option value="organizational">Organizational Goals</option>
@@ -64,10 +87,10 @@
             </select>
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" placeholder="Project GoaL">
+            <input type="text" class="form-control" placeholder="Project Goal" name="title">
         </div>
         <div class="form-group">
-            <select name="priotry" class="form-control">
+            <select class="form-control" name="priotry">
                 <option value="0">0</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -81,7 +104,7 @@
             </select>
         </div>
         <div class="form-group">
-            <input type="text" placeholder="Comment/Description" class="form-control">
+            <input type="text" placeholder="Comment/Description" class="form-control" name="description">
         </div>
         <div class="form-group">
             <button type="submit" class="btn btn-default">Add goal</button>

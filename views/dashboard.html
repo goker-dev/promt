@@ -36,9 +36,13 @@
 
             <div class="row">
                 <div class="col-sm-3 col-md-2 sidebar">
+                    <img src="{{image}}" alt="{{session.username}}" class="profile-image">
+                    <p class="username">{{session.username}}</p>
                     <ul class="nav nav-sidebar">
+                        <li class="create-project"><a href="/dashboard/newproject" class="btn btn-warning">Create a project</a></li>
                         <li class="active"><a href="/">My Projects</a></li>
                     </ul>
+                    {% if session.project %}
                     <ul class="nav nav-sidebar">
                         <li><a href="/dashboard/info">Project Info</a></li>
                         <li><a href="/dashboard/goals">Project Goals</a></li>
@@ -53,6 +57,8 @@
                         <li><a href="/dashboard/change-management">Change Management</a></li>
                         <li><a href="/dashboard/view">Project view</a></li>
                     </ul>
+                    {% else %}
+                    {% endif %}
                     <!--
                     <ul class="nav nav-sidebar">
                     <li><a href="">Nav item</a></li>
@@ -75,28 +81,27 @@
                         {% include section %}
 
                     {% else %}
+                    <!--
                     <h1 class="page-header">Dashboard</h1>
 
-                        Welcome <strong>{{username}}</strong>;
+                        Welcome <strong>{{session.username}}</strong>;
                         <br>
                         This is <span class="promt">promt</span>, the best requirement based project management tool.
                         <br>
                         You can manage your projects or <a href="/dashboard/newproject">create a new one</a> easily in here.
-
+                    -->
                     <h2 class="sub-header">Projects</h2>
-                    
                     {% if projects %}
                     
                         {% for project in projects %}
                             <!--<h2><a href="/post/{{post['permalink']}}">{{project['title']}}</a></h2>-->
-                            <h2><a href="#">{{project['title']}}</a></h2>
+                            <h2><a href="./dashboard/set?project={{project['_id']}}">{{project['title']}}</a></h2>
                             Created {{project['date']}} <i>By {{project['author']}}</i><br>
                             <hr>
                             {% autoescape false %}
                                 {{project['body']}}
                             {% endautoescape %}
-                            <p>
-                            <p>
+                            <!--
                             <em>Filed Under</em>:
                             {% for tag in project.tags %}
                                 {% if loop.first %}
@@ -105,6 +110,7 @@
                                     , <a href="/tag/{{tag}}">{{tag}}</a>
                                 {% endif %}
                             {% endfor %}
+                            -->
                         {% endfor %}
                     
                     {% else %}
@@ -120,5 +126,9 @@
                 </div>
             </div>
         </div>
+        
+    <script src="/js/jquery-2.1.0.min.js"></script>
+    <script src="/js/dashboard.js"></script>
+        
     </body>
 </html>

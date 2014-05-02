@@ -1,5 +1,5 @@
-var UsersDAO = require('../users').UsersDAO
-  , SessionsDAO = require('../sessions').SessionsDAO;
+var UsersDAO = require('../models/users').UsersDAO
+  , SessionsDAO = require('../models/sessions').SessionsDAO;
 
 /* The SessionHandler must be constructed with a connected db */
 function SessionHandler (db) {
@@ -10,11 +10,11 @@ function SessionHandler (db) {
 
     this.isLoggedInMiddleware = function(req, res, next) {
         var session_id = req.cookies.session;
-        sessions.getUsername(session_id, function(err, username) {
+        sessions.getSession(session_id, function(err, session) {
             "use strict";
 
-            if (!err && username) {
-                req.username = username;
+            if (!err && session) {
+                req.session = session;
             }
             return next();
         });
@@ -49,7 +49,7 @@ function SessionHandler (db) {
                 }
             }
 
-            sessions.startSession(user['_id'], function(err, session_id) {
+            sessions.startSession(user, function(err, session_id) {
                 "use strict";
 
                 if (err) return next(err);

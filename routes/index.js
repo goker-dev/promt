@@ -34,8 +34,18 @@ module.exports = exports = function(app, db) {
 
     // Welcome page
     //app.get("/dashboard", sessionHandler.displayDashoardPage);
-    app.get("/dashboard/:section?", contentHandler.displayDashoardPage);
-    app.post("/dashboard/:section", contentHandler.handleDashoardPage);
+    app.get("/dashboard/set", contentHandler.setDashboardPage);
+    app.get("/dashboard/info", contentHandler.displayInfoPage);
+    app.get("/dashboard/:section?", contentHandler.displayDashboardPage);
+    app.post("/dashboard", contentHandler.handleDashboardPage);
+    app.post("/dashboard/info", contentHandler.handleInfoPage);
+    
+    app.put("/dashboard/goals/add", contentHandler.addGoal);
+    app.post("/dashboard/goals/update", contentHandler.updateGoal);
+    app.post("/dashboard/goals/order", contentHandler.orderGoals);
+    app.post("/dashboard/goals/delete", contentHandler.deleteGoal);
+    
+    app.post("/dashboard/scope", contentHandler.handleScopePage);
 
     // Signup form
     app.get('/signup', sessionHandler.displaySignupPage);

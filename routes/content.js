@@ -1,66 +1,78 @@
-var ProjectDAO = require('../project').ProjectDAO
-  , sanitize = require('validator').sanitize; // Helper to sanitize form input
+var ProjectDAO = require('../models/project').ProjectDAO
+  , GoalsDAO = require('../models/goals').GoalsDAO
+  , SessionsDAO = require('../models/sessions').SessionsDAO 
+  , sanitize = require('validator').sanitize,// Helper to sanitize form input
+    gravatar = require('gravatar');
 
 /* The ContentHandler must be constructed with a connected db */
 function ContentHandler (db) {
     "use strict";
 
     var projects = new ProjectDAO(db);
+    var goals = new GoalsDAO(db);
+    var sessions = new SessionsDAO(db)
 
     this.displayMainPage = function(req, res, next) {
         "use strict";
-
-        /*
-        posts.getPosts(10, function(err, results) {
-            "use strict";
-
-            if (err) return next(err);
-
-            return res.render('blog_template', {
-                title: 'blog homepage',
-                username: req.username,
-                myposts: results
-            });
-        });
-        */
-        if (req.username) return res.redirect("/dashboard");
-        
-        return res.render('index', {
-                title: 'promt'
-        });
+        if (req.session && req.session.username) return res.redirect("/dashboard");
+        return res.render('index', {});
     }
     
-    this.displayDashoardPage = function(req, res, next) {
+    this.displayDashboardPage = function(req, res, next) {
         "use strict";
         
         var section = req.params.section ? './sections/'+req.params.section+'.html' : '';
         
-        if (!req.username) return res.redirect("/login");
+        if (!req.session.username) return res.redirect("/login");
         
         projects.getProjects(10, function(err, results) {
             "use strict";
 
             if (err) return next(err);
+            
+            var image = gravatar.url(req.session.email, {s: '100', r: 'pg', d: 'retro'});
 
-            return res.render("dashboard", {'section':section, 'username':req.username, projects: results});
+            return res.render("dashboard", {'section':section, 'session':req.session, 'projects': results, 'image':image});
         });
         
         
     }
-    this.handleDashoardPage = function(req, res, next) {
+    
+    this.setDashboardPage = function(req, res, next) {
+        "use strict";
+        
+        if (!req.session.username) return res.redirect("/login");
+        
+        console.log(req.query);
+        
+        if (req.query.project) {
+            
+            sessions.setSession(req.session['_id'], {'project':req.query.project}, function(err, session){
+                
+                if (err) return next(err);
+                return res.redirect("/dashboard/info");
+                
+            });
+            
+        } else return res.redirect("/dashboard");
+        
+    }
+    
+    this.handleDashboardPage = function(req, res, next) {
         "use strict"; 
         
-        var section = './sections/'+req.params.section+'.html';
+        var section = req.params.section;
+        var sectionView = './sections/'+section+'.html';
         
         var title = req.body.title;
         var description = req.body.description;
         var tags = req.body.tags;
 
-        if (!req.username) return res.redirect("/login");
+        if (!req.session.username) return res.redirect("/login");
 
         if (!title) {
             var errors = "Project must contain a title";
-            return res.render("dashboard", {section:section, subject:title, username:req.username, description:description, tags:tags, errors:errors});
+            return res.render("dashboard", {section:sectionView, subject:title, username:req.username, description:description, tags:tags, errors:errors});
         }
 
         var tags_array = extract_tags(tags)
@@ -83,6 +95,111 @@ function ContentHandler (db) {
         
     }
 
+    
+    this.displayInfoPage = function(req, res, next) {
+        "use strict";
+        
+        var section = './sections/info.html';
+        
+        if (!req.session.username) return res.redirect("/login");
+        
+        projects.getProject(req.session.project, function(err, object) {
+            "use strict";
+
+            if (err) return next(err);
+            //console.log(req.session.project, object);
+            var image = gravatar.url(req.session.email, {s: '100', r: 'pg', d: 'retro'});
+
+            return res.render("dashboard", {'section':section, 'session':req.session, 'image':image, 'project': object});
+        });
+        
+        
+    }
+    this.handleInfoPage = function(req, res, next) {
+        "use strict";
+
+        var tag = req.params.tag;
+        
+    }
+    
+    this.getGoals = function(req, res, next) {
+        "use strict";
+
+        var project = req.body.project;
+        
+        if (!req.session.username) return res.redirect("/login");
+
+        if (!title) {
+            var errors = "Goal must contain a title";
+        }
+        
+        // looks like a good entry, insert it escaped
+        var escaped_title = sanitize(title).escape();
+        var escaped_description = sanitize(description).escape();
+
+        goals.addGoal(0, type, escaped_title, escaped_description, priotry, null, req.username, function(err, object) {
+            "use strict";
+            if (err) return next(err);
+            else return res.json(object);
+        });
+        
+    }
+    
+    this.addGoal = function(req, res, next) {
+        "use strict";
+
+        var type = req.body.type;
+        var title = req.body.title;
+        var description = req.body.description;
+        var priotry = req.body.priotry * 1;
+
+        if (!req.session.username) return res.redirect("/login");
+        if (!req.session.project) return res.redirect("/dashboard");
+
+        if (!title) {
+            var errors = "Goal must contain a title";
+        }
+        
+        // looks like a good entry, insert it escaped
+        var escaped_title = sanitize(title).escape();
+        var escaped_description = sanitize(description).escape();
+
+        goals.addGoal(req.session.project, type, escaped_title, escaped_description, priotry, null, req.username, function(err, object) {
+            "use strict";
+            if (err) return next(err);
+            else return res.json(object);
+        });
+        
+    }
+    this.updateGoal = function(req, res, next) {
+        "use strict";
+
+        res.json(req);
+        
+    }
+    this.orderGoals = function(req, res, next) {
+        "use strict";
+
+        var tag = req.params.tag;
+        
+    }
+    this.deleteGoal = function(req, res, next) {
+        "use strict";
+
+        var tag = req.params.tag;
+        
+    }
+    
+    
+    this.handleScopePage = function(req, res, next) {
+        "use strict";
+
+        var tag = req.params.tag;
+        
+    }
+    
+    
+    
     this.displayMainPageByTag = function(req, res, next) {
         "use strict";
 
@@ -134,7 +251,7 @@ function ContentHandler (db) {
     this.displayNewPostPage = function(req, res, next) {
         "use strict";
 
-        if (!req.username) return res.redirect("/login");
+        if (!req.session.username) return res.redirect("/login");
 
         return res.render('newpost_template', {
             subject: "",
@@ -168,7 +285,7 @@ function ContentHandler (db) {
         var post = req.body.body
         var tags = req.body.tags
 
-        if (!req.username) return res.redirect("/signup");
+        if (!req.session.username) return res.redirect("/signup");
 
         if (!title || !post) {
             var errors = "Post must contain a title and blog entry";
