@@ -37,10 +37,21 @@ module.exports = exports = function(app, db) {
     app.get("/dashboard/set", contentHandler.setDashboardPage);
     app.get("/dashboard/info", contentHandler.displayInfoPage);
     app.get("/dashboard/:section?", contentHandler.displayDashboardPage);
-    app.post("/dashboard", contentHandler.handleDashboardPage);
-    app.post("/dashboard/info", contentHandler.handleInfoPage);
+    //app.post("/dashboard", contentHandler.handleDashboardPage);
     
-    app.put("/dashboard/goals/add", contentHandler.addGoal);
+    //app.get("/dashboard/project/add", contentHandler.displayAddProject);
+    app.post("/dashboard/project/add", contentHandler.addProject);
+    app.post("/dashboard/project/update", contentHandler.updateProject);
+    app.post("/dashboard/project/order", contentHandler.orderProject);
+    app.post("/dashboard/project/delete", contentHandler.deleteProject);
+    
+    app.post("/dashboard/info", contentHandler.updateInfo);
+    app.post("/dashboard/info/add", contentHandler.addInfo);
+    app.post("/dashboard/info/update", contentHandler.updateInfo);
+    app.post("/dashboard/info/order", contentHandler.orderInfo);
+    app.post("/dashboard/info/delete", contentHandler.deleteInfo);
+    
+    app.post("/dashboard/goals/add", contentHandler.addGoal);
     app.post("/dashboard/goals/update", contentHandler.updateGoal);
     app.post("/dashboard/goals/order", contentHandler.orderGoals);
     app.post("/dashboard/goals/delete", contentHandler.deleteGoal);

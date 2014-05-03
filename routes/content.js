@@ -61,37 +61,7 @@ function ContentHandler (db) {
     this.handleDashboardPage = function(req, res, next) {
         "use strict"; 
         
-        var section = req.params.section;
-        var sectionView = './sections/'+section+'.html';
         
-        var title = req.body.title;
-        var description = req.body.description;
-        var tags = req.body.tags;
-
-        if (!req.session || !req.session.username) return res.redirect("/login");
-
-        if (!title) {
-            var errors = "Project must contain a title";
-            return res.render("dashboard", {section:sectionView, subject:title, username:req.username, description:description, tags:tags, errors:errors});
-        }
-
-        var tags_array = extract_tags(tags)
-
-        // looks like a good entry, insert it escaped
-        var escaped_post = sanitize(description).escape();
-
-        // substitute some <br> for the paragraph breaks
-        var formatted_post = escaped_post.replace(/\r?\n/g,'<br>');
-
-        projects.addProject(title, formatted_post, tags_array, req.username, function(err, permalink) {
-            "use strict";
-
-            if (err) return next(err);
-
-            // now redirect to the blog permalink
-            //return res.redirect("/" + permalink)
-            return res.redirect("/")
-        });
         
     }
 
@@ -122,29 +92,110 @@ function ContentHandler (db) {
         
     }
     
-    this.getGoals = function(req, res, next) {
+    
+    
+    // PROJECTS
+    // ---------------------------------------------------------------------------
+    this.addProject = function(req, res, next) {
         "use strict";
-
-        var project = req.body.project;
         
+        var section = 'newproject';
+        var sectionView = './sections/'+section+'.html';
+        
+        var title = req.body.title;
+        var description = req.body.description;
+        var tags = req.body.tags;
+
         if (!req.session || !req.session.username) return res.redirect("/login");
 
         if (!title) {
-            var errors = "Goal must contain a title";
+            var errors = "Project must contain a title";
+            return res.render("dashboard", {section:sectionView, subject:title, username:req.session.username, description:description, tags:tags, errors:errors});
         }
-        
-        // looks like a good entry, insert it escaped
-        var escaped_title = sanitize(title).escape();
-        var escaped_description = sanitize(description).escape();
 
-        goals.addGoal(0, type, escaped_title, escaped_description, priotry, null, req.username, function(err, object) {
+        var tags_array = extract_tags(tags)
+
+        // looks like a good entry, insert it escaped
+        var escaped_post = sanitize(description).escape();
+
+        // substitute some <br> for the paragraph breaks
+        var formatted_post = escaped_post.replace(/\r?\n/g,'<br>');
+
+        projects.addProject(title, formatted_post, tags_array, req.session.username, function(err, permalink) {
             "use strict";
+
             if (err) return next(err);
-            else return res.json(object);
+
+            // now redirect to the blog permalink
+            //return res.redirect("/" + permalink)
+            return res.redirect("/")
         });
-        
+    }
+    this.updateProject = function(req, res, next) {
+        "use strict";
+        res.json(req);
+    }
+    this.orderProject = function(req, res, next) {
+        "use strict";
+        var tag = req.params.tag;
+    }
+    this.deleteProject = function(req, res, next) {
+        "use strict";
+        var tag = req.params.tag;
     }
     
+    
+    // INFO
+    // ---------------------------------------------------------------------------
+    this.addInfo = function(req, res, next) {
+        "use strict";
+        res.json(req);
+    }
+    this.updateInfo = function(req, res, next) {
+        "use strict"; 
+        
+        var section = 'info';
+        var sectionView = './sections/'+section+'.html';
+        
+        var title = req.body.title;
+        var description = req.body.description;
+        var tags = req.body.tags;
+
+        if (!req.session || !req.session.username) return res.redirect("/login");
+        if (!req.session.project) return res.redirect("/dashboard");
+
+        if (!title) {
+            var errors = "Project must contain a title";
+            return res.render("dashboard", {'section':sectionView, 'subject':title, 'session':req.session, 'description':description, 'tags':tags, 'errors':errors});
+        }
+
+        var tags_array = extract_tags(tags)
+
+        // looks like a good entry, insert it escaped
+        var escaped_post = sanitize(description).escape();
+
+        // substitute some <br> for the paragraph breaks
+        var formatted_post = escaped_post.replace(/\r?\n/g,'<br>');
+
+        projects.updateProject(req.session.project, title, formatted_post, tags_array, req.session.username, function(err, project) {
+            "use strict";
+            if (err) return next(err);
+            console.log(project);
+            return res.redirect("/dashboard/" + section);
+        });
+    }
+    this.orderInfo = function(req, res, next) {
+        "use strict";
+        var tag = req.params.tag;
+    }
+    this.deleteInfo = function(req, res, next) {
+        "use strict";
+        var tag = req.params.tag;
+    }
+    
+    
+    // GOALS
+    // ---------------------------------------------------------------------------
     this.addGoal = function(req, res, next) {
         "use strict";
 
@@ -173,22 +224,39 @@ function ContentHandler (db) {
     }
     this.updateGoal = function(req, res, next) {
         "use strict";
-
         res.json(req);
-        
     }
     this.orderGoals = function(req, res, next) {
         "use strict";
-
         var tag = req.params.tag;
-        
     }
     this.deleteGoal = function(req, res, next) {
         "use strict";
-
         var tag = req.params.tag;
+    }
+    this.getGoals = function(req, res, next) {
+        "use strict";
+
+        var project = req.body.project;
+        
+        if (!req.session || !req.session.username) return res.redirect("/login");
+
+        if (!title) {
+            var errors = "Goal must contain a title";
+        }
+        
+        // looks like a good entry, insert it escaped
+        var escaped_title = sanitize(title).escape();
+        var escaped_description = sanitize(description).escape();
+
+        goals.addGoal(0, type, escaped_title, escaped_description, priotry, null, req.username, function(err, object) {
+            "use strict";
+            if (err) return next(err);
+            else return res.json(object);
+        });
         
     }
+    
     
     
     this.handleScopePage = function(req, res, next) {

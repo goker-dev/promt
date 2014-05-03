@@ -1,64 +1,46 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Dashboard</title>
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/dashboard.css">
 
-    <link rel="stylesheet" href="/css/jquery.jOrgChart.css" />
-    <link rel="stylesheet" href="/css/custom.css" />
-    <link rel="stylesheet" href="/css/prettify.css" type="text/css" />
+    </head>
 
-    <script type="text/javascript" src="/js/prettify.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-    <script src="/js/jquery.jOrgChart.js"></script>
+    <body>
 
-    <script>
-        jQuery(document).ready(function () {
-            $("#org").jOrgChart({
-                chartElement: '#chart',
-                dragAndDrop: true
-            });
-        });
-    </script>
-
-</head>
-
-<body onload="prettyPrint();">
-
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/">promt</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/">Dashboard</a>
-                    </li>
-                    <li><a href="/dashboard/settings">Settings</a>
-                    </li>
-                    <li><a href="/dashboard/profile">Profile</a>
-                    </li>
-                    <li><a href="/dashboard/help">Help</a>
-                    </li>
-                    <li><a href="/logout">Logout</a>
-                    </li>
-                </ul>
-                <!--
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/">promt</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/">Dashboard</a>
+                        </li>
+                        <li><a href="/dashboard/settings">Settings</a>
+                        </li>
+                        <li><a href="/dashboard/profile">Profile</a>
+                        </li>
+                        <li><a href="/dashboard/help">Help</a>
+                        </li>
+                        <li><a href="/logout">Logout</a>
+                        </li>
+                    </ul>
+                    <!--
 <form class="navbar-form navbar-right">
 <input type="text" class="form-control" placeholder="Search...">
 </form>
 -->
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="container-fluid">
+        <div class="container-fluid">
 
             <div class="row">
                 <div class="col-sm-3 col-md-2 sidebar">
@@ -69,6 +51,7 @@
                         <li class="active"><a href="/">My Projects</a></li>
                     </ul>
                     {% if session.project %}
+                    <p>{{session.project}}</p>
                     <ul class="nav nav-sidebar">
                         <li><a href="/dashboard/info">Project Info</a></li>
                         <li><a href="/dashboard/goals">Project Goals</a></li>
@@ -86,85 +69,72 @@
                     {% else %}
                     {% endif %}
                     <!--
-                    <ul class="nav nav-sidebar">
-                    <li><a href="">Nav item</a></li>
-                    <li><a href="">Nav item again</a></li>
-                    <li><a href="">One more nav</a></li>
-                    <li><a href="">Another nav item</a></li>
-                    <li><a href="">More navigation</a></li>
-                    </ul>
-                    <ul class="nav nav-sidebar">
-                    <li><a href="">Nav item again</a></li>
-                    <li><a href="">One more nav</a></li>
-                    <li><a href="">Another nav item</a></li>
-                    </ul>
-                    -->
-                    
+<ul class="nav nav-sidebar">
+<li><a href="">Nav item</a></li>
+<li><a href="">Nav item again</a></li>
+<li><a href="">One more nav</a></li>
+<li><a href="">Another nav item</a></li>
+<li><a href="">More navigation</a></li>
+</ul>
+<ul class="nav nav-sidebar">
+<li><a href="">Nav item again</a></li>
+<li><a href="">One more nav</a></li>
+<li><a href="">Another nav item</a></li>
+</ul>
+-->
+
                 </div>
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 
                     {% if section %}
 
-                        {% include section %}
+                    {% include section %}
 
                     {% else %}
-                    <!--
-                    <h1 class="page-header">Dashboard</h1>
 
-                        Welcome <strong>{{session.username}}</strong>;
-                        <br>
-                        This is <span class="promt">promt</span>, the best requirement based project management tool.
-                        <br>
-                        You can manage your projects or <a href="/dashboard/newproject">create a new one</a> easily in here.
-                    -->
                     <h2 class="sub-header">Projects</h2>
-                    {% if projects %}
                     
-                        {% for project in projects %}
-                            <!--<h2><a href="/post/{{post['permalink']}}">{{project['title']}}</a></h2>-->
-                            <h2><a href="./dashboard/set?project={{project['_id']}}">{{project['title']}}</a></h2>
-                            Created {{project['date']}} <i>By {{project['author']}}</i><br>
-                            <hr>
-                            {% autoescape false %}
-                                {{project['body']}}
-                            {% endautoescape %}
-                            <!--
-                            <em>Filed Under</em>:
-                            {% for tag in project.tags %}
-                                {% if loop.first %}
-                                    <a href="/tag/{{tag}}">{{tag}}</a>
-                                {% else %}
-                                    , <a href="/tag/{{tag}}">{{tag}}</a>
-                                {% endif %}
+                        {% if projects %}
+                        <ul class="data-view data-view-grid">
+                            {% for project in projects %}
+                            <li>
+                                <a href="./dashboard/set?project={{project['_id']}}" class="item-link"></a>
+                                <div class="data-view-content">
+
+                                    <h4>{{project['title']}}</h4>
+                                    <small>Owner: {{project['author']}}</small>
+                                    <p>
+                                        {% autoescape false %}
+                                        {{project['description']}}
+                                        {% endautoescape %}
+                                    </p>
+                                </div>
+
+                                <!--
+    <em>Filed Under</em>:
+    {% for tag in project.tags %}
+    {% if loop.first %}
+    <a href="/tag/{{tag}}">{{tag}}</a>
+    {% else %}
+    , <a href="/tag/{{tag}}">{{tag}}</a>
+    {% endif %}
+    {% endfor %}
+    -->
+                            </li>
                             {% endfor %}
-                            -->
-                        {% endfor %}
-                    
-                    {% else %}
-                    
+                        </ul>
+
+                        {% else %}
+
                         You haven't created any projects yet!
-                    
+
+                        {% endif %}
                     {% endif %}
 
-                <h2 class="sub-header">Projects</h2>
-                {% if projects %} {% for project in projects %}
-                <!--<h2><a href="/post/{{post['permalink']}}">{{project['title']}}</a></h2>-->
-                <h2><a href="#">{{project['title']}}</a></h2>
-                Created {{project['date']}} <i>By {{project['author']}}</i>
-                <br>
-                <hr>{% autoescape false %} {{project['body']}} {% endautoescape %}
-                <p>
-                    <p>
-                        <em>Filed Under</em>: {% for tag in project.tags %} {% if loop.first %}
-                        <a href="/tag/{{tag}}">{{tag}}</a>
-                        {% else %} , <a href="/tag/{{tag}}">{{tag}}</a>
-                        {% endif %} {% endfor %} {% endfor %} {% else %} You haven't created any projects yet! {% endif %} {% endif %}
+                </div>
 
-            </div>
-        </div>
-        
-    <script src="/js/jquery-2.1.0.min.js"></script>
-    <script src="/js/dashboard.js"></script>
-        
-    </body>
-</html>
+                <script src="/js/jquery-2.1.0.min.js"></script>
+                <script src="/js/dashboard.js"></script>
+
+            </body>
+        </html>

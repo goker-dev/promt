@@ -37,6 +37,29 @@ function ProjectDAO(db) {
 				}
 		  });
     }
+    
+    this.updateProject = function (id, title, description, tags, author, callback) {
+        "use strict";
+
+        // fix up the permalink to not include whitespace
+        var permalink = title.replace( /\s/g, '_' );
+        permalink = permalink.replace( /\W/g, '' );
+
+        // Build a new post
+        var project = {"title": title,
+                "description": description,
+                "permalink":permalink,
+                "tags": tags,
+                "update": new Date()}
+        console.log(id);
+		  projects.update({'_id':new require('mongodb').ObjectID(id)}, {'$set':project}, {'$upsert':1}, function(err, item) {
+		  		if (err) {
+					callback(err, null);
+				} else {
+					callback(null, item);
+				}
+		  });
+    }
 
     this.getProjects = function(num, callback) {
         "use strict";
