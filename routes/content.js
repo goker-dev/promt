@@ -23,7 +23,7 @@ function ContentHandler (db) {
         
         var section = req.params.section ? './sections/'+req.params.section+'.html' : '';
         
-        if (!req.session.username) return res.redirect("/login");
+        if (!req.session || !req.session.username) return res.redirect("/login");
         
         projects.getProjects(10, function(err, results) {
             "use strict";
@@ -41,7 +41,7 @@ function ContentHandler (db) {
     this.setDashboardPage = function(req, res, next) {
         "use strict";
         
-        if (!req.session.username) return res.redirect("/login");
+        if (!req.session || !req.session.username) return res.redirect("/login");
         
         console.log(req.query);
         
@@ -68,7 +68,7 @@ function ContentHandler (db) {
         var description = req.body.description;
         var tags = req.body.tags;
 
-        if (!req.session.username) return res.redirect("/login");
+        if (!req.session || !req.session.username) return res.redirect("/login");
 
         if (!title) {
             var errors = "Project must contain a title";
@@ -101,7 +101,7 @@ function ContentHandler (db) {
         
         var section = './sections/info.html';
         
-        if (!req.session.username) return res.redirect("/login");
+        if (!req.session || !req.session.username) return res.redirect("/login");
         
         projects.getProject(req.session.project, function(err, object) {
             "use strict";
@@ -127,7 +127,7 @@ function ContentHandler (db) {
 
         var project = req.body.project;
         
-        if (!req.session.username) return res.redirect("/login");
+        if (!req.session || !req.session.username) return res.redirect("/login");
 
         if (!title) {
             var errors = "Goal must contain a title";
@@ -153,7 +153,7 @@ function ContentHandler (db) {
         var description = req.body.description;
         var priotry = req.body.priotry * 1;
 
-        if (!req.session.username) return res.redirect("/login");
+        if (!req.session || !req.session.username) return res.redirect("/login");
         if (!req.session.project) return res.redirect("/dashboard");
 
         if (!title) {
