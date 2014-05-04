@@ -9,7 +9,7 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="items">
             <tr class="info functional">
                 <td>Functional Goals</td>
                 <td></td>
@@ -62,7 +62,7 @@
                 <td>environmental</td>
                 <td></td>
                 <td></td>
-                <td><a class="btn btn-default btn-sm">Remove</a>
+                <td><a class="btn btn-default btn-sm">Remove</a></td>
             </tr>
         </tbody>
     </table>
@@ -72,7 +72,7 @@
     {{errors}}
 </div>
 {% endif %}
-<form class="form-inline ajax" method="put" action="./goals/add">
+<form class="form-inline ajax" method="post" action="./goals/add">
     <fieldset>
         <div class="form-group">
             <select class="form-control" name="type">
@@ -111,3 +111,44 @@
         </div>
     </fieldset>
 </form>
+<script>
+    function addItem(item){
+        var html = '<tr id="'+item['_id']+'" class="'+item.type+'">'
+                + '<td>'+item.title+'</td>'
+                + '<td>'+item.priotry+'</td>'
+                + '<td>'+item.description+'</td>'
+                + '<td><a class="btn btn-default btn-sm" onclick="removeItem(\''+item['_id']+'\')">Remove</a></td>'
+            + '</tr>';
+        $('#items').find('.info.'+item.type).after(html);
+    }
+    function removeItem(id){
+        $.ajax({
+                url: '/dashboard/goals/delete',
+                type: 'post',
+                data: 'id='+id,
+                dataType: 'json',
+                success: function(item){
+                   $('#'+item).remove();
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            });
+    }
+    function complete(response){ console.log(response.result); addItem(response.result); }
+    window.onload = function(){
+            $.ajax({
+                url: '/dashboard/goals/get',
+                type: 'get',
+                data: null,
+                dataType: 'json',
+                success: function(items){
+                    for(var i in items)
+                        addItem(items[i]);
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            });
+        }
+</script>

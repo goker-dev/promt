@@ -215,7 +215,7 @@ function ContentHandler (db) {
         var escaped_title = sanitize(title).escape();
         var escaped_description = sanitize(description).escape();
 
-        goals.addGoal(req.session.project, type, escaped_title, escaped_description, priotry, null, req.username, function(err, object) {
+        goals.addGoal(req.session.project, type, escaped_title, escaped_description, priotry, null, req.session.username, function(err, object) {
             "use strict";
             if (err) return next(err);
             else return res.json(object);
@@ -232,29 +232,20 @@ function ContentHandler (db) {
     }
     this.deleteGoal = function(req, res, next) {
         "use strict";
-        var tag = req.params.tag;
-    }
-    this.getGoals = function(req, res, next) {
-        "use strict";
-
-        var project = req.body.project;
-        
-        if (!req.session || !req.session.username) return res.redirect("/login");
-
-        if (!title) {
-            var errors = "Goal must contain a title";
-        }
-        
-        // looks like a good entry, insert it escaped
-        var escaped_title = sanitize(title).escape();
-        var escaped_description = sanitize(description).escape();
-
-        goals.addGoal(0, type, escaped_title, escaped_description, priotry, null, req.username, function(err, object) {
+        goals.deleteGoal(req.body.id, function(err, object) {
             "use strict";
             if (err) return next(err);
             else return res.json(object);
         });
-        
+    }
+    this.getGoals = function(req, res, next) {
+        "use strict";
+        if (!req.session || !req.session.username) return res.redirect("/login");
+        goals.getGoals(req.session.project, function(err, object) {
+            "use strict";
+            if (err) return next(err);
+            else return res.json(object);
+        });
     }
     
     

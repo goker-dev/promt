@@ -36,17 +36,29 @@ function GoalsDAO(db) {
 		  });
     }
 
-    this.getGoals = function(num, callback) {
+    this.getGoals = function(project, callback) {
         "use strict";
 
-        goals.find().sort('date', -1).limit(num).toArray(function(err, items) {
+        goals.find({'project':project,'status':'active'}).sort('date', -1)
+        .toArray(function(err, items) {
             "use strict";
 
             if (err) return callback(err, null);
 
-            console.log("Found " + items.length + " goals");
+            //console.log("Found " + items.length + " goals");
 
             callback(err, items);
+        });
+    }
+    
+    
+    this.deleteGoal = function(id, callback) {
+        "use strict";
+        goals.update({'_id':new require('mongodb').ObjectID(id)}, {'$set':{'status':'removed'}}, function(err, item) {
+            "use strict";
+            console.log('delete: '+id, new require('mongodb').ObjectID(id));
+            if (err) return callback(err, null);
+            callback(err, id);
         });
     }
 

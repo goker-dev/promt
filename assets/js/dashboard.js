@@ -169,6 +169,7 @@
                         .html(forma.result.message));
 
             if(forma.result.redirect) location.href = forma.result.redirect;
+            var results = forma.result;
             eval($(forma).data('complete'));
 
             return;
@@ -204,6 +205,9 @@
     };
 })(jQuery);
 
-$('form.ajax').forma({'ajaxpost':1, 'fileupload':1, 'postunchecked':1});
+$('form.ajax').forma({'ajaxpost':1, 'fileupload':1, 'postunchecked':1, 'complete': complete});
+
+
+
 
 

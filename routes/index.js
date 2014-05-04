@@ -51,6 +51,7 @@ module.exports = exports = function(app, db) {
     app.post("/dashboard/info/order", contentHandler.orderInfo);
     app.post("/dashboard/info/delete", contentHandler.deleteInfo);
     
+    app.get("/dashboard/goals/get", contentHandler.getGoals);
     app.post("/dashboard/goals/add", contentHandler.addGoal);
     app.post("/dashboard/goals/update", contentHandler.updateGoal);
     app.post("/dashboard/goals/order", contentHandler.orderGoals);
