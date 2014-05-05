@@ -205,7 +205,7 @@
     };
 })(jQuery);
 
-$('form.ajax').forma({'ajaxpost':1, 'fileupload':1, 'postunchecked':1, 'complete': complete});
+$('form.ajax').forma({'ajaxpost':1, 'fileupload':1, 'postunchecked':1, 'complete': (complete || function(){})});
 
 
 
