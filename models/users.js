@@ -1,19 +1,21 @@
 var bcrypt = require('bcrypt-nodejs');
 
-/* The UsersDAO must be constructed with a connected database object */
+/* The DAO must be constructed with a connected database object */
 function UsersDAO(db) {
     "use strict";
+
+    var collection = 'users';
 
     /* If this constructor is called without the "new" operator, "this" points
      * to the global object. Log a warning and call it correctly. */
     if (false === (this instanceof UsersDAO)) {
-        console.log('Warning: UsersDAO constructor called without "new" operator');
+        console.log('Warning: ' + collection + 'DAO constructor called without "new" operator');
         return new UsersDAO(db);
     }
 
-    var users = db.collection("users");
+    var mongo = db.collection(collection);
 
-    this.addUser = function(username, password, email, callback) {
+    this.addUser = function (username, password, email, callback) {
         "use strict";
 
         // Generate password hash
@@ -21,14 +23,17 @@ function UsersDAO(db) {
         var password_hash = bcrypt.hashSync(password, salt);
 
         // Create user document
-        var user = {'_id': username, 'password': password_hash};
+        var user = {
+            '_id': username,
+            'password': password_hash
+        };
 
         // Add email if set
         if (email != "") {
             user['email'] = email;
         }
 
-        users.insert(user, function (err, result) {
+        mongo.insert(user, function (err, result) {
             "use strict";
 
             if (!err) {
@@ -40,7 +45,52 @@ function UsersDAO(db) {
         });
     }
 
-    this.validateLogin = function(username, password, callback) {
+    // GET
+    // ========================================================================   
+    this.get = function (ID, callback) {
+        "use strict";
+
+        console.log("get an item in ", collection, ID);
+
+        mongo.findOne({
+            '_id': ID
+        }, function (err, item) {
+            if (err) return callback(err, null);
+            callback(err, item);
+        });
+    }
+
+
+    // LIST
+    // ========================================================================   
+    this.list = function (search, callback) {
+        "use strict";
+
+        console.log("list items from ", collection);
+
+        mongo.find({
+            $or: [{
+                    '_id': {
+                        $regex: search + '*',
+                        $options: 'i'
+                    }
+            },
+                {
+                    'name': {
+                        $regex: search + '*',
+                        $options: 'i'
+                    }
+            }]
+        }).sort('name', 1).limit(10)
+            .toArray(function (err, items) {
+                "use strict";
+                if (err) return callback(err, null);
+                return callback(err, items);
+            });
+    }
+
+
+    this.validateLogin = function (username, password, callback) {
         "use strict";
 
         // Callback to pass to MongoDB that validates a user document
@@ -52,15 +102,13 @@ function UsersDAO(db) {
             if (user) {
                 if (bcrypt.compareSync(password, user.password)) {
                     callback(null, user);
-                }
-                else {
+                } else {
                     var invalid_password_error = new Error("Invalid password");
                     // Set an extra field so we can distinguish this from a db error
                     invalid_password_error.invalid_password = true;
                     callback(invalid_password_error, null);
                 }
-            }
-            else {
+            } else {
                 var no_such_user_error = new Error("User: " + user + " does not exist");
                 // Set an extra field so we can distinguish this from a db error
                 no_such_user_error.no_such_user = true;
@@ -68,7 +116,9 @@ function UsersDAO(db) {
             }
         }
 
-        users.findOne({ '_id' : username }, validateUserDoc);
+        mongo.findOne({
+            '_id': username
+        }, validateUserDoc);
     }
 }
 

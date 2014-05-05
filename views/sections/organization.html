@@ -1,115 +1,107 @@
-<form class="form-horizontal" method="post">
-    <fieldset>
-        <legend>Organization</legend>
+<legend>Organazitaon</legend>
+<div class="table table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-sm-3">Title</th>
+                <th class="col-sm-4">User</th>
+                <th class="col-sm-1"></th>
+            </tr>
+        </thead>
+        <tbody id="items">
+        </tbody>
+    </table>
+</div>
+{% if errors %}
+<div class="alert alert-dismissable alert-danger">
+    {{errors}}
+</div>
+{% endif %}
+<form class="form ajax" method="post" action="./organization/add">
+    <table class="table table-condensed">
+        <tr>
+            <td class="col-sm-2">
+                <input type="text" class="form-control" placeholder="Title" name="title" list="titles" autocomplete="off">
+                <datalist id="titles">
+                    <option value="Customer">Customer</option>
+                    <option value="Business Owner">Business Owner</option>
+                    <option value="Product Owner">Product Owner</option>
+                    <option value="Project Manager">Project Manager</option>
+                    <option value="Analyst">Analyst</option>
+                    <option value="Tester">Tester</option>
+                    <option value="Developer">Developer</option>
+                </datalist>
+            </td>
+            <td class="col-sm-4">
+                <input type="text" class="form-control" placeholder="User" name="user" list="users" autocomplete="off">
+                <datalist id="users"></datalist>
+            </td>
+            <td class="col-sm-1">
+                <button type="submit" class="btn btn-default">Add member</button>
+            </td>
+        </tr>
+    </table>
 
-        <div class="pull-right">
-            <div class="alert-message info" id="show-list">Show underlying list.</div>
-
-            <pre class="prettyprint lang-html" id="list-html" style="display:none">
-&lt;ul id="org" style="display:none"&gt;
- &lt;li&gt;
-    Food
-    &lt;ul&gt;
-      &lt;li&gt;Beer&lt;/li&gt;
-      &lt;li&gt;Vegetables
-        &lt;ul&gt;
-          &lt;li&gt;Pumpkin&lt;/li&gt;
-          &lt;li&gt;
-		&lt;a href="http://tquila.com" target="_blank"&gt;Aubergine&lt;/a&gt;
-		&lt;p&gt;A link and paragraph is all we need.&lt;/p&gt;
-	 &lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;Fruit
-        &lt;ul&gt;
-          &lt;li&gt;Apple
-            &lt;ul&gt;
-              &lt;li&gt;Granny Smith&lt;/li&gt;
-            &lt;/ul&gt;
-          &lt;/li&gt;
-          &lt;li&gt;Berries
-            &lt;ul&gt;
-              &lt;li&gt;Blueberry&lt;/li&gt;
-              &lt;li&gt;&lt;img src="images/raspberry.jpg" alt="Raspberry"/&gt;&lt;/li&gt;
-              &lt;li&gt;Cucumber&lt;/li&gt;
-            &lt;/ul&gt;
-          &lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;Bread&lt;/li&gt;
-      &lt;li&gt;Chocolate
-        &lt;ul&gt;
-          &lt;li&gt;Topdeck&lt;/li&gt;
-          &lt;li&gt;Reese's Cups&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;</pre>	
-        </div>
-
-        <ul id="org" style="display:none">
-            <li>
-                Food
-                <ul>
-                    <li>Beer</li>
-                    <li>Vegetables
-                        <ul>
-                            <li>Pumpkin</li>
-                            <li>
-                                <a href="http://tquila.com" target="_blank">Aubergine</a>
-                                <p>A link and paragraph is all we need.</p>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Fruit
-                        <ul>
-                            <li>Apple
-                                <ul>
-                                    <li>Granny Smith</li>
-                                </ul>
-                            </li>
-                            <li>Berries
-                                <ul>
-                                    <li>Blueberry</li>
-                                    <li>
-                                        <img src="images/raspberry.jpg" alt="Raspberry" />
-                                    </li>
-                                    <li>Cucumber</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Bread</li>
-                    <li>Chocolate
-                        <ul>
-                            <li>Topdeck</li>
-                            <li>Reese's Cups</li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-
-        <div id="chart" class="orgChart"></div>
-
-
-        {% if errors %}
-        <div class="alert alert-dismissable alert-danger">
-            {{errors}}
-        </div>
-        {% endif %}
-
-        <!--
-        <label class="control-label">Title</label>
-        <input type="text" class="form-control" name="title" size="120" value="{{title}}" required>
-        <label class="control-label">Description</label>
-        <textarea name="description" class="form-control" cols="120" rows="4">{{decription}}</textarea>
-        <label class="control-label">Tags</label>
-        <input type="text" class="form-control" name="tags" size="120" value="{{tags}}" />
-        <p></p>
-        
--->
-    </fieldset>
 </form>
+<script>
+    function addItem(item) {
+        var html = '<tr id="' + item['_id'] + '">' + '<td>' + item.title + '</td>' + '<td>' + item.user + '</td>' + '<td><a class="btn btn-default btn-sm" onclick="removeItem(\'' + item['_id'] + '\')">Remove</a></td>' + '</tr>';
+        $('#items').prepend(html);
+    }
 
+    function removeItem(id) {
+        $.ajax({
+            url: '/dashboard/organization/delete',
+            type: 'post',
+            data: 'id=' + id,
+            dataType: 'json',
+            success: function (item) {
+                $('#' + item).remove();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    function complete(response) {
+        console.log(response.result);
+        addItem(response.result);
+    }
+    window.onload = function () {
+        $.ajax({
+            url: '/dashboard/organization/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addItem(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+
+        $("input[name=user]").on("input", function (e) {
+            var val = $(this).val();
+            if (val === "") return;
+            //You could use this to limit results
+            if (val.length < 1) return;
+            //console.log(val);
+            $.get("/dashboard/user/list", {
+                'search': val
+            }, function (users) {
+                var dataList = $("#users");
+                dataList.empty();
+                if (users.length) {
+                    for (var i in users) {
+                        var opt = $("<option>").html('_id').attr("value", users[i]['_id']);
+                        dataList.append(opt);
+                    }
+
+                }
+            }, "json");
+        });
+    }
+</script>

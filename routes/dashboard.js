@@ -1,6 +1,9 @@
-var ProjectDAO = require('../models/project').ProjectDAO,
+var UsersDAO = require('../models/users').UsersDAO,
+    ProjectDAO = require('../models/project').ProjectDAO,
     GoalsDAO = require('../models/goals').GoalsDAO,
     ScopesDAO = require('../models/scopes').ScopesDAO,
+    OrganizationsDAO = require('../models/organization').OrganizationsDAO,
+    WorkBreakdownStructuresDAO = require('../models/wbs').WorkBreakdownStructuresDAO,
     RisksDAO = require('../models/risks').RisksDAO,
     SessionsDAO = require('../models/sessions').SessionsDAO,
     sanitize = require('validator').sanitize, // Helper to sanitize form input
@@ -10,9 +13,12 @@ var ProjectDAO = require('../models/project').ProjectDAO,
 function DashboardHandler(db) {
     "use strict";
 
+    var users = new UsersDAO(db);
     var projects = new ProjectDAO(db);
     var goals = new GoalsDAO(db);
     var scopes = new ScopesDAO(db);
+    var organizations = new OrganizationsDAO(db);
+    var wbs = new WorkBreakdownStructuresDAO(db);
     var risks = new RisksDAO(db);
     var sessions = new SessionsDAO(db)
 
@@ -69,6 +75,20 @@ function DashboardHandler(db) {
         } else return res.redirect("/dashboard");
     }
 
+    // ========================================================================
+    // USER HANDLERS
+    // ========================================================================
+    // LIST
+    // ------------------------------------------------------------------------
+    this.listUsers = function (req, res, next) {
+        "use strict";
+        if (!req.session || !req.session.username) return res.redirect("/login");
+        users.list(req.query.search, function (err, items) {
+            if (err) return next(err);
+            return res.json(items);
+        });
+    }
+    
     // ========================================================================
     // PROJECT HANDLERS
     // ========================================================================
@@ -340,6 +360,135 @@ function DashboardHandler(db) {
             return res.json(item);
         });
     }
+    
+    
+    
+    // ========================================================================
+    // ORGANIZATION HANDLERS
+    // ========================================================================
+    // ADD
+    // ------------------------------------------------------------------------
+    this.addOrganization = function (req, res, next) {
+        "use strict";
+
+        var title = req.body.title;
+        var user = req.body.user;
+
+        if (!req.session || !req.session.username) return res.redirect("/login");
+        if (!req.session.project) return res.redirect("/dashboard");
+
+        // looks like a good entry, insert it escaped
+        title = sanitize(title).escape();
+
+        organizations.add(req.session.project, title, user, null, req.session.username,
+            function (err, item) {
+                "use strict";
+                if (err) return next(err);
+                return res.json(item);
+            });
+
+    }
+    // LIST
+    // ------------------------------------------------------------------------
+    this.listOrganization = function (req, res, next) {
+        "use strict";
+        if (!req.session || !req.session.username) return res.redirect("/login");
+        organizations.list(req.session.project, function (err, items) {
+            if (err) return next(err);
+            return res.json(items);
+        });
+    }
+    // UPDATE
+    // ------------------------------------------------------------------------
+    this.updateOrganization = function (req, res, next) {
+        "use strict";
+        res.json(req);
+    }
+    // ORDER
+    // ------------------------------------------------------------------------
+    this.orderOrganization = function (req, res, next) {
+        "use strict";
+        res.json(req);
+    }
+    // DELETE
+    // ------------------------------------------------------------------------
+    this.deleteOrganization = function (req, res, next) {
+        "use strict";
+        organizations.delete(req.body.id, function (err, item) {
+            "use strict";
+            if (err) return next(err);
+            return res.json(item);
+        });
+    }
+
+    
+    
+    
+    // ========================================================================
+    // WBS HANDLERS
+    // ========================================================================
+    // ADD
+    // ------------------------------------------------------------------------
+    this.addWBS = function (req, res, next) {
+        "use strict";
+
+        var type = req.body.type;
+        var title = req.body.title;
+        var description = req.body.description;
+        var priotry = req.body.priotry * 1;
+
+        if (!req.session || !req.session.username) return res.redirect("/login");
+        if (!req.session.project) return res.redirect("/dashboard");
+
+        if (!title) {
+            var errors = "Goal must contain a title";
+        }
+
+        // looks like a good entry, insert it escaped
+        title = sanitize(title).escape();
+        description = sanitize(description).escape();
+
+        wbs.add(req.session.project, type, title, description, priotry, null, req.session.username,
+            function (err, item) {
+                "use strict";
+                if (err) return next(err);
+                return res.json(item);
+            });
+
+    }
+    // LIST
+    // ------------------------------------------------------------------------
+    this.listWBS = function (req, res, next) {
+        "use strict";
+        if (!req.session || !req.session.username) return res.redirect("/login");
+        wbs.list(req.session.project, function (err, items) {
+            if (err) return next(err);
+            return res.json(items);
+        });
+    }
+    // UPDATE
+    // ------------------------------------------------------------------------
+    this.updateWBS = function (req, res, next) {
+        "use strict";
+        res.json(req);
+    }
+    // ORDER
+    // ------------------------------------------------------------------------
+    this.orderWBS = function (req, res, next) {
+        "use strict";
+        res.json(req);
+    }
+    // DELETE
+    // ------------------------------------------------------------------------
+    this.deleteWBS = function (req, res, next) {
+        "use strict";
+        wbs.delete(req.body.id, function (err, item) {
+            "use strict";
+            if (err) return next(err);
+            return res.json(item);
+        });
+    }
+
     
     
 

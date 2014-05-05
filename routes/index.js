@@ -24,6 +24,8 @@ module.exports = exports = function(app, db) {
 
     // Logout page
     app.get('/logout', sessionHandler.displayLogoutPage);
+    
+    app.get("/dashboard/user/list", dashboardHandler.listUsers);
 
     app.post("/dashboard/project/add", dashboardHandler.addProject);
     app.post("/dashboard/project/update", dashboardHandler.updateProject);
@@ -45,6 +47,17 @@ module.exports = exports = function(app, db) {
     app.post("/dashboard/scope/order", dashboardHandler.orderScopes);
     app.post("/dashboard/scope/delete", dashboardHandler.deleteScope);
     
+    app.post("/dashboard/organization/add", dashboardHandler.addOrganization);
+    app.get("/dashboard/organization/list", dashboardHandler.listOrganization);
+    app.post("/dashboard/organization/update", dashboardHandler.updateOrganization);
+    app.post("/dashboard/organization/order", dashboardHandler.orderOrganization);
+    app.post("/dashboard/organization/delete", dashboardHandler.deleteOrganization);
+    
+    app.post("/dashboard/wbs/add", dashboardHandler.addWBS);
+    app.get("/dashboard/wbs/list", dashboardHandler.listWBS);
+    app.post("/dashboard/wbs/update", dashboardHandler.updateWBS);
+    app.post("/dashboard/wbs/order", dashboardHandler.orderWBS);
+    app.post("/dashboard/wbs/delete", dashboardHandler.deleteWBS);
     
     app.post("/dashboard/risk/add", dashboardHandler.addRisk);
     app.get("/dashboard/risk/list", dashboardHandler.listRisks);

@@ -65,7 +65,7 @@ function RisksDAO(db) {
         mongo.find({
             'project': project,
             'status': 'active'
-        }).sort('date', -1)
+        }).sort('date', 1)
             .toArray(function (err, items) {
                 "use strict";
                 if (err) return callback(err, null);
