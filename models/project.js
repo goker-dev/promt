@@ -2,7 +2,7 @@
 function ProjectDAO(db) {
     "use strict";
 
-    var collection = "project";
+    var collection = "projects";
 
     /* If this constructor is called without the "new" operator, "this" points
      * to the global object. Log a warning and call it correctly. */
@@ -70,7 +70,7 @@ function ProjectDAO(db) {
             .toArray(function (err, items) {
                 "use strict";
                 if (err) return callback(err, null);
-                callback(err, items);
+                return callback(err, items);
             });
     }
 
