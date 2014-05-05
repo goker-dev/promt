@@ -45,7 +45,7 @@ function ProjectDAO(db) {
 
     // GET
     // ========================================================================   
-    this.get = function (id, callback) {
+    this.get = function (ID, callback) {
         "use strict";
 
         console.log("get an item in ", collection, ID);
