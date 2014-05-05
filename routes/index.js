@@ -1,29 +1,22 @@
+
 var SessionHandler = require('./session')
-  , ContentHandler = require('./content')
+  , DashboardHandler = require('./dashboard')
   , ErrorHandler = require('./error').errorHandler;
 
 module.exports = exports = function(app, db) {
 
     var sessionHandler = new SessionHandler(db);
-    var contentHandler = new ContentHandler(db);
+    var dashboardHandler = new DashboardHandler(db);
 
     // Middleware to see if a user is logged in
     app.use(sessionHandler.isLoggedInMiddleware);
 
-    // The main page of the blog
-    app.get('/', contentHandler.displayMainPage);
+    // The main page of the system
+    app.get('/', dashboardHandler.displayMainPage);
 
-    // The main page of the blog, filtered by tag
-    app.get('/tag/:tag', contentHandler.displayMainPageByTag);
-
-    // A single post, which can be commented on
-    app.get("/post/:permalink", contentHandler.displayPostByPermalink);
-    //app.post('/newcomment', contentHandler.handleNewComment);
-    app.get("/post_not_found", contentHandler.displayPostNotFound);
-
-    // Displays the form allowing a user to add a new post. Only works for logged in users
-    app.get('/newpost', contentHandler.displayNewPostPage);
-    app.post('/newpost', contentHandler.handleNewPost);
+    // Signup form
+    app.get('/signup', sessionHandler.displaySignupPage);
+    app.post('/signup', sessionHandler.handleSignup);
 
     // Login form
     app.get('/login', sessionHandler.displayLoginPage);
@@ -32,36 +25,37 @@ module.exports = exports = function(app, db) {
     // Logout page
     app.get('/logout', sessionHandler.displayLogoutPage);
 
-    // Welcome page
-    //app.get("/dashboard", sessionHandler.displayDashoardPage);
-    app.get("/dashboard/set", contentHandler.setDashboardPage);
-    app.get("/dashboard/info", contentHandler.displayInfoPage);
-    app.get("/dashboard/:section?", contentHandler.displayDashboardPage);
-    //app.post("/dashboard", contentHandler.handleDashboardPage);
+    app.post("/dashboard/project/add", dashboardHandler.addProject);
+    app.post("/dashboard/project/update", dashboardHandler.updateProject);
+    app.post("/dashboard/project/order", dashboardHandler.orderProject);
+    app.post("/dashboard/project/delete", dashboardHandler.deleteProject);
     
-    //app.get("/dashboard/project/add", contentHandler.displayAddProject);
-    app.post("/dashboard/project/add", contentHandler.addProject);
-    app.post("/dashboard/project/update", contentHandler.updateProject);
-    app.post("/dashboard/project/order", contentHandler.orderProject);
-    app.post("/dashboard/project/delete", contentHandler.deleteProject);
+    app.get("/dashboard/info", dashboardHandler.getInfo);
+    app.post("/dashboard/info", dashboardHandler.updateInfo);
     
-    app.post("/dashboard/info", contentHandler.updateInfo);
-    app.post("/dashboard/info/add", contentHandler.addInfo);
-    app.post("/dashboard/info/update", contentHandler.updateInfo);
-    app.post("/dashboard/info/order", contentHandler.orderInfo);
-    app.post("/dashboard/info/delete", contentHandler.deleteInfo);
+    app.post("/dashboard/goals/add", dashboardHandler.addGoal);
+    app.get("/dashboard/goals/list", dashboardHandler.listGoals);
+    app.post("/dashboard/goals/update", dashboardHandler.updateGoal);
+    app.post("/dashboard/goals/order", dashboardHandler.orderGoals);
+    app.post("/dashboard/goals/delete", dashboardHandler.deleteGoal);
     
-    app.get("/dashboard/goals/get", contentHandler.getGoals);
-    app.post("/dashboard/goals/add", contentHandler.addGoal);
-    app.post("/dashboard/goals/update", contentHandler.updateGoal);
-    app.post("/dashboard/goals/order", contentHandler.orderGoals);
-    app.post("/dashboard/goals/delete", contentHandler.deleteGoal);
+    app.post("/dashboard/scope/add", dashboardHandler.addScope);
+    app.get("/dashboard/scope/list", dashboardHandler.listScopes);
+    app.post("/dashboard/scope/update", dashboardHandler.updateScope);
+    app.post("/dashboard/scope/order", dashboardHandler.orderScopes);
+    app.post("/dashboard/scope/delete", dashboardHandler.deleteScope);
     
-    app.post("/dashboard/scope", contentHandler.handleScopePage);
-
-    // Signup form
-    app.get('/signup', sessionHandler.displaySignupPage);
-    app.post('/signup', sessionHandler.handleSignup);
+    
+    app.post("/dashboard/risk/add", dashboardHandler.addRisk);
+    app.get("/dashboard/risk/list", dashboardHandler.listRisks);
+    app.post("/dashboard/risk/update", dashboardHandler.updateRisk);
+    app.post("/dashboard/risk/order", dashboardHandler.orderRisks);
+    app.post("/dashboard/risk/delete", dashboardHandler.deleteRisk);
+    
+    
+    // Dashboard
+    app.get("/dashboard/set", dashboardHandler.setDashboardPage);
+    app.get("/dashboard/:section?", dashboardHandler.displayDashboardPage);
 
     // Error handling middleware
     app.use(ErrorHandler);

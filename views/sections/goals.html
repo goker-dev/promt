@@ -3,10 +3,10 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Project Goal</th>
-                <th>Priorities</th>
+                <th class="col-sm-3">Project Goal</th>
+                <th class="col-sm-1">Priorities</th>
                 <th>Comment/Description</th>
-                <th></th>
+                <th class="col-sm-1"></th>
             </tr>
         </thead>
         <tbody id="items">
@@ -58,12 +58,6 @@
                 <td></td>
                 <td></td>
             </tr>
-            <tr>
-                <td>environmental</td>
-                <td></td>
-                <td></td>
-                <td><a class="btn btn-default btn-sm">Remove</a></td>
-            </tr>
         </tbody>
     </table>
 </div>
@@ -72,83 +66,86 @@
     {{errors}}
 </div>
 {% endif %}
-<form class="form-inline ajax" method="post" action="./goals/add">
-    <fieldset>
-        <div class="form-group">
-            <select class="form-control" name="type">
-                <option value="functional">Functional Goals</option>
-                <option value="strategic">Strategic Goals</option>
-                <option value="business">Business Goals</option>
-                <option value="technological">Technological Goals</option>
-                <option value="quality">Quality Goals</option>
-                <option value="organizational">Organizational Goals</option>
-                <option value="other">Other Goals</option>
-                <option value="constraints">Constraints</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="Project Goal" name="title">
-        </div>
-        <div class="form-group">
-            <select class="form-control" name="priotry">
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <input type="text" placeholder="Comment/Description" class="form-control" name="description">
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-default">Add goal</button>
-        </div>
-    </fieldset>
+<form class="form ajax" method="post" action="./goals/add">
+    <table class="table table-condensed">
+        <tr>
+            <td class="col-sm-2">
+                <select class="form-control" name="type">
+                    <option value="functional">Functional Goals</option>
+                    <option value="strategic">Strategic Goals</option>
+                    <option value="business">Business Goals</option>
+                    <option value="technological">Technological Goals</option>
+                    <option value="quality">Quality Goals</option>
+                    <option value="organizational">Organizational Goals</option>
+                    <option value="other">Other Goals</option>
+                    <option value="constraints">Constraints</option>
+                </select>
+            </td>
+            <td class="col-sm-3">
+                <input type="text" class="form-control" placeholder="Project Goal" name="title">
+            </td>
+            <td class="col-sm-1">
+                <select class="form-control" name="priotry">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" placeholder="Comment/Description" class="form-control" name="description">
+            </td>
+            <td class="col-sm-1">
+                <button type="submit" class="btn btn-default">Add goal</button>
+            </td>
+        </tr>
+    </table>
+
 </form>
 <script>
-    function addItem(item){
-        var html = '<tr id="'+item['_id']+'" class="'+item.type+'">'
-                + '<td>'+item.title+'</td>'
-                + '<td>'+item.priotry+'</td>'
-                + '<td>'+item.description+'</td>'
-                + '<td><a class="btn btn-default btn-sm" onclick="removeItem(\''+item['_id']+'\')">Remove</a></td>'
-            + '</tr>';
-        $('#items').find('.info.'+item.type).after(html);
+    function addItem(item) {
+        var html = '<tr id="' + item['_id'] + '" class="' + item.type + '">' + '<td>' + item.title + '</td>' + '<td>' + item.priotry + '</td>' + '<td>' + item.description + '</td>' + '<td><a class="btn btn-default btn-sm" onclick="removeItem(\'' + item['_id'] + '\')">Remove</a></td>' + '</tr>';
+        $('#items').find('.info.' + item.type).after(html);
     }
-    function removeItem(id){
+
+    function removeItem(id) {
         $.ajax({
-                url: '/dashboard/goals/delete',
-                type: 'post',
-                data: 'id='+id,
-                dataType: 'json',
-                success: function(item){
-                   $('#'+item).remove();
-                },
-                error: function(err){
-                    console.log(err);
-                }
-            });
+            url: '/dashboard/goals/delete',
+            type: 'post',
+            data: 'id=' + id,
+            dataType: 'json',
+            success: function (item) {
+                $('#' + item).remove();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
     }
-    function complete(response){ console.log(response.result); addItem(response.result); }
-    window.onload = function(){
-            $.ajax({
-                url: '/dashboard/goals/get',
-                type: 'get',
-                data: null,
-                dataType: 'json',
-                success: function(items){
-                    for(var i in items)
-                        addItem(items[i]);
-                },
-                error: function(err){
-                    console.log(err);
-                }
-            });
-        }
+
+    function complete(response) {
+        console.log(response.result);
+        addItem(response.result);
+    }
+    window.onload = function () {
+        $.ajax({
+            url: '/dashboard/goals/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addItem(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
 </script>

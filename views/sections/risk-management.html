@@ -1,20 +1,100 @@
-<form class="form-horizontal" method="post">
-    <fieldset>
-        <legend>Risk Management</legend>
-        <label class="control-label">Title</label>
-        <input type="text" class="form-control" name="title" size="120" value="{{title}}" required>
-        <label class="control-label">Description</label>
-        <textarea name="description" class="form-control" cols="120" rows="4">{{decription}}</textarea>
-        <label class="control-label">Tags</label>
-        <input type="text" class="form-control" name="tags" size="120" value="{{tags}}" />
-        <p></p>
-        {% if errors %}
-        <div class="alert alert-dismissable alert-danger">
-            {{errors}}
-        </div>
-        {% endif %}
-        <p class="pull-right">
-            <button type="submit" class="btn btn-primary">Update the project</button>
-        </p>
-    </fieldset>
+<legend>Risk Management</legend>
+<div class="table table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Risks</th>
+                <th class="col-sm-1">Category</th>
+                <th class="col-sm-1">Probability</th>
+                <th class="col-sm-1">Impact</th>
+                <th class="col-sm-3">Cost</th>
+                <th class="col-sm-1"></th>
+            </tr>
+        </thead>
+        <tbody id="items">
+        </tbody>
+    </table>
+</div>
+{% if errors %}
+<div class="alert alert-dismissable alert-danger">
+    {{errors}}
+</div>
+{% endif %}
+<form class="form ajax" method="post" action="./risk/add">
+    <table class="table table-condensed">
+        <tr>
+            <td class="col-sm-3">
+                <select class="form-control" name="category">
+                    <option value="ER">[ER] External Risk</option>
+                    <option value="CR">[CR] Cost Risk</option>
+                    <option value="SR">[SR] Schedule Risk</option>
+                    <option value="TR">[TR] Technological Risk</option>
+                    <option value="OR">[OR] Operational Risk</option>
+                    <option value="other">Other Risk</option>
+                </select>
+            </td>
+            <td>
+                <textarea type="text" class="form-control" rows="1" placeholder="Risk description" name="description"></textarea>
+            </td>
+            <td class="col-sm-1">
+                <input type="number" class="form-control" placeholder="00" name="probability">
+            </td>
+            <td class="col-sm-1">
+                <select class="form-control" name="impact">
+                    <option value="1">1 - Catastrophic</option>
+                    <option value="2">2 - Critical</option>
+                    <option value="3">3 - Marginal</option>
+                    <option value="4">4 - Negligible</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" placeholder="Cost" class="form-control" name="cost">
+            </td>
+            <td class="col-sm-1">
+                <button type="submit" class="btn btn-default">Add risk</button>
+            </td>
+        </tr>
+    </table>
+
 </form>
+<script>
+    function addItem(item) {
+        var html = '<tr id="' + item['_id'] + '"><td>' + item.description.replace(/\n/g, '<br/>') + '</td>' + '<td>' + item.category + '</td>' + '<td>' + item.probability + ' %</td>' + '<td>' + item.impact + '</td>' + '<td>' + item.cost + '</td>' + '<td><a class="btn btn-default btn-sm" onclick="removeItem(\'' + item['_id'] + '\')">Remove</a></td>' + '</tr>';
+        $('#items').append(html);
+    }
+
+    function removeItem(id) {
+        $.ajax({
+            url: '/dashboard/risk/delete',
+            type: 'post',
+            data: 'id=' + id,
+            dataType: 'json',
+            success: function (item) {
+                $('#' + item).remove();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    function complete(response) {
+        console.log(response.result);
+        addItem(response.result);
+    }
+    window.onload = function () {
+        $.ajax({
+            url: '/dashboard/risk/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addItem(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+</script>

@@ -1,98 +1,85 @@
-    <form class="form-inline" method="post">
-        <fieldset>
-            <legend>Scope</legend>
-            <div class="table table-responsive">
-        <table class="table table-striped table-bordered table-condensed table-hover">
-            <thead>
-                
-                <tr>
-                    <th>#</th>
-                    <th>Scope</th>
-                </tr>
-            </thead>
-            <tbody>
-            <tr class="info">
-                <td></td>
-                <td>Included Scope</td>
-                <td></td>
-            </tr>
+<legend>Scope</legend>
+<div class="table table-responsive">
+    <table id="items" class="table table-striped table-bordered table-condensed table-hover">
+        <thead>
             <tr>
-                <td>1</td>
-                <td>Scope 1</td>
-                <td><a class="btn btn-default btn-sm">Remove</a></td>
+                <th>Scope</th>
+                <th class="col-sm-1"></th>
             </tr>
-            <tr class="info">
-                <td></td>
-                <td>Excluded Scope</td>
+        </thead>
+        <tbody>
+            <tr class="info included">
+                <td>Included</td>
                 <td></td>
             </tr>
-            <tr>
-                <td>2</td>
-                <td>scope 2</td>
-                <td><a class="btn btn-default btn-sm">Remove</a></td>
+            <tr class="info excluded">
+                <td>Excluded</td>
+                <td></td>
             </tr>
         </tbody>
-        </table>
-    </div>
-    {% if errors %}
-    <div class="alert alert-dismissable alert-danger">
-        {{errors}}
-    </div>
-    {% endif %}
-    <form class="form-inline" method="post">
-        <fieldset>
-            <div class="form-group">
-                <select class="form-control">
-                    <option value="included">Included Scop</option>
-                    <option value="excluded">Excluded Scope</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <input type="text" class="form-control" placeholder="#">
-            </div>
-            <div class="form-group">
-                <input type="text" placeholder="Scope" class="form-control">
-            </div>
-            <div class="form-group">
+    </table>
+</div>
+{% if errors %}
+<div class="alert alert-dismissable alert-danger">
+    {{errors}}
+</div>
+{% endif %}
+<form class="form ajax" method="post" action="./scope/add">
+    <table class="table table-condensed">
+        <tr>
+            <td class="col-sm-3">
+            <select class="form-control" name="type">
+                <option value="included">Included Scop</option>
+                <option value="excluded">Excluded Scope</option>m
+            </select>
+            </td>
+            <td>
+                <textarea class="form-control" rows="1" placeholder="Description" name="description"></textarea>
+            </td>
+            <td  class="col-sm-1">
                 <button type="submit" class="btn btn-default">Add scope</button>
-            </div>
-        </fieldset>
-<!--    </form>
-            <h4>Excluded</h4>
-            <div class="table table-responsive">
-        <table class="table table-striped table-bordered table-condensed table-hover">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Excluded Scope</th>
-                </tr>
-            </thead>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-        </table>
-    </div>
-    {% if errors %}
-    <div class="alert alert-dismissable alert-danger">
-        {{errors}}
-    </div>
-    {% endif %}
-    <form class="form-inline" method="post">
-        <fieldset>
-            <div class="form-group">
-                <input type="text" class="form-control" placeholder="#">
-            </div>
-            <div class="form-group">
-                <input type="text" placeholder="Scope" class="form-control">
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-default">Add scope</button>
-            </div>
-        </fieldset>
-    </form>
-        </fieldset>
-    </form>
--->
+            </td>
+        </tr>
+    </table>
+</form>
+<script>
+    function addItem(item) {
+        var html = '<tr id="' + item['_id'] + '" class="' + item.type + '"><td>' + item.description.replace(/\n/g,'<br/>') + '</td>' + '<td><a class="btn btn-default btn-sm" onclick="removeItem(\'' + item['_id'] + '\')">Remove</a></td>' + '</tr>';
+        $('#items').find('.info.' + item.type).after(html);
+    }
+
+    function removeItem(id) {
+        $.ajax({
+            url: '/dashboard/scope/delete',
+            type: 'post',
+            data: 'id=' + id,
+            dataType: 'json',
+            success: function (item) {
+                $('#' + item).remove();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    function complete(response) {
+        console.log(response.result);
+        addItem(response.result);
+    }
+    window.onload = function () {
+        $.ajax({
+            url: '/dashboard/scope/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addItem(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+</script>

@@ -4,9 +4,11 @@ var express = require('express'),
     swig = require('swig'), // Templating library adapter for Express
     MongoClient = require('mongodb').MongoClient, // Driver for connecting to MongoDB
     routes = require('./routes'); // Routes for our application
-MongoClient.connect('mongodb://localhost:27017/promt', function(err, db) {
+
+MongoClient.connect('mongodb://localhost:27017/promt', function (err, db) {
     "use strict";
-    if(err) throw err;
+    if (err) throw err;
+
     // Register our templating engine
     app.engine('html', cons.swig);
     app.set('view engine', 'html');
@@ -14,7 +16,7 @@ MongoClient.connect('mongodb://localhost:27017/promt', function(err, db) {
     swig.init({
         root: __dirname + '/views'
     });
-    
+
     app.use(function (req, res, next) {
 
         // Website you wish to allow to connect
@@ -33,7 +35,7 @@ MongoClient.connect('mongodb://localhost:27017/promt', function(err, db) {
         // Pass to next layer of middleware
         next();
     });
-    
+
     // ASSETES / JS / CSS / etc.
     // =============================================================================
     app.use(express.static(__dirname + '/assets'));
