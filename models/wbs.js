@@ -1,28 +1,29 @@
 /* The DAO must be constructed with a connected database object */
 function WorkBreakdownStructuresDAO(db) {
     "use strict";
-    
+
     var collection = "workbreakdownstructures";
 
     /* If this constructor is called without the "new" operator, "this" points
      * to the global object. Log a warning and call it correctly. */
     if (false === (this instanceof WorkBreakdownStructuresDAO)) {
-        console.log('Warning: '+ collection +'DAO constructor called without "new" operator');
+        console.log('Warning: ' + collection + 'DAO constructor called without "new" operator');
         return new WorkBreakdownStructuresDAO(db);
     }
-    
+
     var mongo = db.collection(collection);
 
     // ADD
     // ========================================================================    
-    this.add = function (project, title, user, bound, author, callback) {
+    this.add = function (project, level, parent, title, bound, author, callback) {
         "use strict";
 
         // Build a new item
         var item = {
             "project": project,
+            "level": level,
+            "parent": parent,
             "title": title,
-            "user": user,
             "status": 'active',
             "bound": bound,
             "author": author,
@@ -54,15 +55,17 @@ function WorkBreakdownStructuresDAO(db) {
 
     // LIST
     // ========================================================================
-    this.list = function (project, callback) {
+    this.list = function (project, level, callback) {
         "use strict";
 
-        console.log("list items from ", collection, project);
-        
-        mongo.find({
+        console.log("list items from ", collection, project, level);
+
+        var query = {
             'project': project,
             'status': 'active'
-        }).sort('date', -1)
+        };
+        if (level) query.level = level;
+        mongo.find(query).sort('date', 1)
             .toArray(function (err, items) {
                 "use strict";
                 if (err) return callback(err, null);
@@ -104,21 +107,32 @@ function WorkBreakdownStructuresDAO(db) {
     // DELETE
     // ========================================================================   
 
-    this.delete = function (ID, callback) {
-        "use strict";
+    this.delete = function (ID, callback, sub) {
+        //"use strict";
+        var self = this;
 
-        console.log('delete an item in', collection, ID);
+        console.log('delete an item in', collection, ID, sub);
 
+        mongo.find({
+            'parent': ID
+        })
+            .toArray(function (err, items) {
+                "use strict";
+                for (var i in items)
+                    self.delete(items[i]['_id'], null, true);
+
+            });
+        console.log('delete an item in', collection, ID, sub);
         mongo.update({
-            '_id': new require('mongodb').ObjectID(ID)
+            '_id': new require('mongodb').ObjectID(ID.toString())
         }, {
             '$set': {
                 'status': 'removed'
             }
-        }, function (err, item) {
-            if (err) return callback(err, null);
-            callback(err, ID);
+        }, function (err) {
+            if (callback) callback(err, ID);
         });
+
     }
 }
 

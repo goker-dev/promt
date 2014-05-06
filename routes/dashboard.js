@@ -432,23 +432,21 @@ function DashboardHandler(db) {
     this.addWBS = function (req, res, next) {
         "use strict";
 
-        var type = req.body.type;
+        var level = req.body.level * 1;
+        var parent = req.body.parent;
         var title = req.body.title;
-        var description = req.body.description;
-        var priotry = req.body.priotry * 1;
 
         if (!req.session || !req.session.username) return res.redirect("/login");
         if (!req.session.project) return res.redirect("/dashboard");
 
-        if (!title) {
-            var errors = "Goal must contain a title";
+        if (level > 1 && !title) {
+            return res.json({'error':'Level 2 and up needs a parent work property'});
         }
 
         // looks like a good entry, insert it escaped
         title = sanitize(title).escape();
-        description = sanitize(description).escape();
 
-        wbs.add(req.session.project, type, title, description, priotry, null, req.session.username,
+        wbs.add(req.session.project, level, parent, title, null, req.session.username,
             function (err, item) {
                 "use strict";
                 if (err) return next(err);
@@ -461,7 +459,8 @@ function DashboardHandler(db) {
     this.listWBS = function (req, res, next) {
         "use strict";
         if (!req.session || !req.session.username) return res.redirect("/login");
-        wbs.list(req.session.project, function (err, items) {
+        var level = (req.query.level * 1) -1 || 0
+        wbs.list(req.session.project, level, function (err, items) {
             if (err) return next(err);
             return res.json(items);
         });

@@ -1,20 +1,211 @@
-<form class="form-horizontal" method="post">
-    <fieldset>
-        <legend>View</legend>
-        <label class="control-label">Title</label>
-        <input type="text" class="form-control" name="title" size="120" value="{{title}}" required>
-        <label class="control-label">Description</label>
-        <textarea name="description" class="form-control" cols="120" rows="4">{{decription}}</textarea>
-        <label class="control-label">Tags</label>
-        <input type="text" class="form-control" name="tags" size="120" value="{{tags}}" />
-        <p></p>
-        {% if errors %}
-        <div class="alert alert-dismissable alert-danger">
-            {{errors}}
-        </div>
-        {% endif %}
-        <p class="pull-right">
-            <button type="submit" class="btn btn-primary">Update the project</button>
-        </p>
-    </fieldset>
-</form>
+<h3>Project View</h3>
+<legend>Goals</legend>
+<div class="table table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-sm-3">Project Goal</th>
+                <th class="col-sm-1">Priorities</th>
+                <th>Comment/Description</th>
+            </tr>
+        </thead>
+        <tbody id="goals">
+            <tr class="info functional">
+                <td>Functional Goals</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info strategic">
+                <td>Strategic Goals</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info business">
+                <td>Business Goals</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info technological">
+                <td>Technological Goals</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info quality">
+                <td>Quality Goals</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info organizational">
+                <td>Organizational Goals</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info other">
+                <td>Other Goals</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="info constraints">
+                <td>Constraints</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<legend>Scope</legend>
+<div class="table table-responsive">
+    <table id="scope" class="table table-striped table-bordered table-condensed table-hover">
+        <thead>
+            <tr>
+                <th>Scope</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="info included">
+                <td>Included</td>
+            </tr>
+            <tr class="info excluded">
+                <td>Excluded</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<legend>Organization</legend>
+<div class="table table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-sm-3">Title</th>
+                <th class="col-sm-4">User</th>
+                <th class="col-sm-1"></th>
+            </tr>
+        </thead>
+        <tbody id="organization">
+        </tbody>
+    </table>
+</div>
+<legend>Work Breakdown Structure</legend>
+<div class="table table-responsive">
+    <table class="table">
+        <tbody>
+            <tr id="wbs"></tr>
+        </tbody>
+    </table>
+</div>
+<legend>Risk Management</legend>
+<div class="table table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Risks</th>
+                <th class="col-sm-1">Category</th>
+                <th class="col-sm-1">Probability</th>
+                <th class="col-sm-1">Impact</th>
+                <th class="col-sm-3">Cost</th>
+                <th class="col-sm-1"></th>
+            </tr>
+        </thead>
+        <tbody id="risks">
+        </tbody>
+    </table>
+</div>
+<script>
+    function addGoal(item) {
+        var html = '<tr id="' + item['_id'] + '" class="' + item.type + '">' + '<td>' + item.title + '</td>' + '<td>' + item.priotry + '</td>' + '<td>' + item.description + '</td>' + '</tr>';
+        $('#goals').find('.info.' + item.type).after(html);
+    }
+
+    function addScope(item) {
+        var html = '<tr id="' + item['_id'] + '" class="' + item.type + '"><td>' + item.description.replace(/\n/g, '<br/>') + '</td>' + '</tr>';
+        $('#scope').find('.info.' + item.type).after(html);
+    }
+
+    function addOrganization(item) {
+        var html = '<tr id="' + item['_id'] + '">' + '<td>' + item.title + '</td>' + '<td>' + item.user + '</td></tr>';
+        $('#organization').append(html);
+    }
+    
+    function addWBS(item) {
+        if (item['level'] == 1) {
+            var html = '<td id="' + item['_id'] + '">' + '<table class="wbs top"><tr><td class="border"><div class="vline"></div></td></tr>' + '<tr><td class="title"><p>' + item.title + '</p></td></tr>' + '<tr><td class="subs ' + item['_id'] + '"></td></tr>' + '</table></td>';
+            $('#wbs').append(html);
+        } else {
+            var html = '<table id="' + item['_id'] + '" class="wbs sub">' + '<tr><td class="border"><div class="hline"></div></td><td class="title"><p>' + item.title + '</p></td></tr>' + '<tr><td></td><td></td><td class="subs ' + item['_id'] + '"></td></tr>' + '</table>';
+            $('#wbs').find('.' + item['parent']).append(html);
+        }
+    }
+    
+    function addRisk(item) {
+        var html = '<tr id="' + item['_id'] + '"><td>' + item.description.replace(/\n/g, '<br/>') + '</td>' + '<td>' + item.category + '</td>' + '<td>' + item.probability + ' %</td>' + '<td>' + item.impact + '</td>' + '<td>' + item.cost + '</td></tr>';
+        $('#risks').append(html);
+    }
+    
+    window.onload = function () {
+        $.ajax({
+            url: '/dashboard/goals/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addGoal(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+        $.ajax({
+            url: '/dashboard/scope/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addScope(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+        $.ajax({
+            url: '/dashboard/organization/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addOrganization(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+        $.ajax({
+            url: '/dashboard/wbs/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addWBS(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+        $.ajax({
+            url: '/dashboard/risk/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addRisk(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+</script>

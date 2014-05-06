@@ -1,4 +1,4 @@
-<legend>Organazitaon</legend>
+<legend>Organization</legend>
 <div class="table table-responsive">
     <table class="table table-bordered">
         <thead>
@@ -96,7 +96,7 @@
                 dataList.empty();
                 if (users.length) {
                     for (var i in users) {
-                        var opt = $("<option>").html('_id').attr("value", users[i]['_id']);
+                        var opt = $("<option>").html(users[i]['_id']).attr("value", users[i]['_id']);
                         dataList.append(opt);
                     }
 

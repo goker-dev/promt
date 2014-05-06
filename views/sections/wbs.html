@@ -1,20 +1,105 @@
-<form class="form-horizontal" method="post">
-    <fieldset>
-        <legend>Work Breakdown Structure</legend>
-        <label class="control-label">Title</label>
-        <input type="text" class="form-control" name="title" size="120" value="{{title}}" required>
-        <label class="control-label">Description</label>
-        <textarea name="description" class="form-control" cols="120" rows="4">{{decription}}</textarea>
-        <label class="control-label">Tags</label>
-        <input type="text" class="form-control" name="tags" size="120" value="{{tags}}" />
-        <p></p>
-        {% if errors %}
-        <div class="alert alert-dismissable alert-danger">
-            {{errors}}
-        </div>
-        {% endif %}
-        <p class="pull-right">
-            <button type="submit" class="btn btn-primary">Update the project</button>
-        </p>
-    </fieldset>
+<legend>Work Breakdown Structure</legend>
+<div class="table table-responsive">
+    <table class="table">
+        <tbody>
+            <tr id="items"></tr>
+        </tbody>
+    </table>
+</div>
+{% if errors %}
+<div class="alert alert-dismissable alert-danger">
+    {{errors}}
+</div>
+{% endif %}
+<form class="form ajax" method="post" action="./wbs/add">
+    <table class="table table-condensed">
+        <tr>
+            <td class="col-sm-2">
+                <select class="form-control" placeholder="Level" name="level">
+                    <option value="1">Level 1</option>
+                    <option value="2">Level 2</option>
+                    <option value="3">Level 3</option>
+                    <option value="4">Level 4</option>
+                    <option value="5">Level 5</option>
+                </select>
+            </td>
+            <td class="col-sm-3">
+                <select class="form-control" placeholder="Parent Work" name="parent" id="parent" disabled></select>
+            </td>
+            <td>
+                <input type="text" class="form-control" placeholder="Title" name="title">
+            </td>
+            <td class="col-sm-1">
+                <button type="submit" class="btn btn-default">Add work</button>
+            </td>
+        </tr>
+    </table>
+
 </form>
+<script>
+    function addItem(item) {
+        if (item['level'] == 1) {
+            var html = '<td id="' + item['_id'] + '">' + '<table class="wbs top"><tr><td class="border"><div class="vline"></div></td></tr>' + '<tr><td class="title"><p>' + item.title + '</p><a class="remove" onclick="removeItem(\'' + item['_id'] + '\')">x</a></td></tr>' + '<tr><td class="subs ' + item['_id'] + '"></td></tr>' + '</table></td>';
+            $('#items').append(html);
+        } else {
+            var html = '<table id="' + item['_id'] + '" class="wbs sub">' + '<tr><td class="border"><div class="hline"></div></td><td class="title"><p>' + item.title + '</p><a class="remove" onclick="removeItem(\'' + item['_id'] + '\')">x</a></td></tr>' + '<tr><td></td><td></td><td class="subs ' + item['_id'] + '"></td></tr>' + '</table>';
+            $('#items').find('.' + item['parent']).append(html);
+        }
+    }
+
+    function removeItem(id) {
+        $.ajax({
+            url: '/dashboard/wbs/delete',
+            type: 'post',
+            data: 'id=' + id,
+            dataType: 'json',
+            success: function (item) {
+                $('#' + item).remove();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    function complete(response) {
+        console.log(response.result);
+        addItem(response.result);
+    }
+    window.onload = function () {
+        $.ajax({
+            url: '/dashboard/wbs/list',
+            type: 'get',
+            data: null,
+            dataType: 'json',
+            success: function (items) {
+                for (var i in items)
+                    addItem(items[i]);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+
+        $("select[name=level]").on("change", function (e) {
+            var val = $(this).val();
+            var dataList = $("#parent");
+            dataList.empty();
+            if (val <= 1) {
+                dataList.attr('disabled', 'disabled');
+                return;
+            }
+            $.get("/dashboard/wbs/list", {
+                'level': val
+            }, function (works) {
+                if (works.length) {
+                    for (var i in works) {
+                        var opt = $("<option>").html(works[i]['title']).attr("value", works[i]['_id']);
+                        dataList.append(opt);
+                    }
+                    dataList.removeAttr('disabled');
+                }
+            }, "json");
+        });
+    }
+</script>

@@ -60,7 +60,7 @@
 <script>
     function addItem(item) {
         var html = '<tr id="' + item['_id'] + '"><td>' + item.description.replace(/\n/g, '<br/>') + '</td>' + '<td>' + item.category + '</td>' + '<td>' + item.probability + ' %</td>' + '<td>' + item.impact + '</td>' + '<td>' + item.cost + '</td>' + '<td><a class="btn btn-default btn-sm" onclick="removeItem(\'' + item['_id'] + '\')">Remove</a></td>' + '</tr>';
-        $('#items').prepend(html);
+        $('#items').append(html);
     }
 
     function removeItem(id) {
