@@ -1,4 +1,22 @@
 <h3>Project View</h3>
+<div class="table table-responsive">
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-sm-2 info">Title</td>
+                <td>{{project.title}}</td>
+            </tr>
+            <tr>
+                <td class="col-sm-2 info">Description</td>
+                <td>{{project.description}}</td>
+            </tr>
+            <tr>
+                <td class="col-sm-2 info">Keywords</td>
+                <td>{{project.tags}}</td>
+            </tr>
+        </tbodt>
+    </table>
+</div>
 <legend>Goals</legend>
 <div class="table table-responsive">
     <table class="table table-bordered">
@@ -125,7 +143,7 @@
         var html = '<tr id="' + item['_id'] + '">' + '<td>' + item.title + '</td>' + '<td>' + item.user + '</td></tr>';
         $('#organization').append(html);
     }
-    
+
     function addWBS(item) {
         if (item['level'] == 1) {
             var html = '<td id="' + item['_id'] + '">' + '<table class="wbs top"><tr><td class="border"><div class="vline"></div></td></tr>' + '<tr><td class="title"><p>' + item.title + '</p></td></tr>' + '<tr><td class="subs ' + item['_id'] + '"></td></tr>' + '</table></td>';
@@ -135,12 +153,12 @@
             $('#wbs').find('.' + item['parent']).append(html);
         }
     }
-    
+
     function addRisk(item) {
         var html = '<tr id="' + item['_id'] + '"><td>' + item.description.replace(/\n/g, '<br/>') + '</td>' + '<td>' + item.category + '</td>' + '<td>' + item.probability + ' %</td>' + '<td>' + item.impact + '</td>' + '<td>' + item.cost + '</td></tr>';
         $('#risks').append(html);
     }
-    
+
     window.onload = function () {
         $.ajax({
             url: '/dashboard/goals/list',

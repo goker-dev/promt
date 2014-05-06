@@ -50,11 +50,14 @@ function DashboardHandler(db) {
                 d: 'retro'
             });
 
-            return res.render("dashboard", {
-                'section': section,
-                'session': req.session,
-                'projects': results,
-                'image': image
+            projects.get(req.session.project, function (err, project) {
+                return res.render("dashboard", {
+                    'section': section,
+                    'session': req.session,
+                    'projects': results,
+                    'project': project,
+                    'image': image
+                });
             });
         });
 
@@ -88,7 +91,7 @@ function DashboardHandler(db) {
             return res.json(items);
         });
     }
-    
+
     // ========================================================================
     // PROJECT HANDLERS
     // ========================================================================
@@ -124,7 +127,7 @@ function DashboardHandler(db) {
         // substitute some <br> for the paragraph breaks
         //description = description.replace(/\r?\n/g, '<br>');
 
-        project.add(title, description, tags, req.session.username,
+        projects.add(title, description, tags, req.session.username,
             function (err, item) {
                 "use strict";
                 if (err) return next(err);
@@ -360,9 +363,9 @@ function DashboardHandler(db) {
             return res.json(item);
         });
     }
-    
-    
-    
+
+
+
     // ========================================================================
     // ORGANIZATION HANDLERS
     // ========================================================================
@@ -421,9 +424,9 @@ function DashboardHandler(db) {
         });
     }
 
-    
-    
-    
+
+
+
     // ========================================================================
     // WBS HANDLERS
     // ========================================================================
@@ -440,7 +443,9 @@ function DashboardHandler(db) {
         if (!req.session.project) return res.redirect("/dashboard");
 
         if (level > 1 && !title) {
-            return res.json({'error':'Level 2 and up needs a parent work property'});
+            return res.json({
+                'error': 'Level 2 and up needs a parent work property'
+            });
         }
 
         // looks like a good entry, insert it escaped
@@ -459,7 +464,7 @@ function DashboardHandler(db) {
     this.listWBS = function (req, res, next) {
         "use strict";
         if (!req.session || !req.session.username) return res.redirect("/login");
-        var level = (req.query.level * 1) -1 || 0
+        var level = (req.query.level * 1) - 1 || 0
         wbs.list(req.session.project, level, function (err, items) {
             if (err) return next(err);
             return res.json(items);
@@ -488,8 +493,8 @@ function DashboardHandler(db) {
         });
     }
 
-    
-    
+
+
 
     // ========================================================================
     // RISK HANDLERS
@@ -553,8 +558,8 @@ function DashboardHandler(db) {
         });
     }
 
-    
-    
+
+
     // FUNCTIONS
     // ========================================================================
     function extract_tags(tags) {

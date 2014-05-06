@@ -51,15 +51,15 @@
                         <li class="active"><a href="/">My Projects</a></li>
                     </ul>
                     {% if session.project %}
-                    <p>{{session.project}}</p>
+                    <legend>{{project.title}}</legend>
                     <ul class="nav nav-sidebar">
-                        <li><a href="/dashboard/info">Project Info</a></li>
-                        <li><a href="/dashboard/goals">Project Goals</a></li>
-                        <li><a href="/dashboard/scope">Project Scope</a></li>
+                        <li><a href="/dashboard/info">Info</a></li>
+                        <li><a href="/dashboard/goals">Goals</a></li>
+                        <li><a href="/dashboard/scope">Scope</a></li>
                         <li><a href="/dashboard/organization">Organization</a></li>
                         <li><a href="/dashboard/wireframe">Wireframes</a></li>
                         <li><a href="/dashboard/requirements">Requirements</a></li>
-                        <li><a href="/dashboard/wbs">Work Breakdown Structure</a></li>
+                        <li><a href="/dashboard/wbs">WBS</a></li>
                         <li><a href="/dashboard/activities">Activities</a></li>
                         <li><a href="/dashboard/schedule">Schedule</a></li>
                         <li><a href="/dashboard/risk-management">Risk Management</a></li>
