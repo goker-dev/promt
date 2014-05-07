@@ -21,7 +21,8 @@
 <div class="clearfix"></div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    var socket = io.connect('http://localhost:8082');
+    console.log(location.host);
+    var socket = io.connect('http://' + location.host);
     socket.on('connect', function () {
         // call the server-side function 'adduser' and send one parameter (value of prompt)
         socket.emit('adduser', '{{session.username}}');
