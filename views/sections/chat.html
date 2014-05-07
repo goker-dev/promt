@@ -22,7 +22,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
     console.log(location.hostname);
-    var socket = io.connect('http://' + location.hostname ':8082');
+    var socket = io.connect('http://' + location.hostname + ':8082');
     socket.on('connect', function () {
         // call the server-side function 'adduser' and send one parameter (value of prompt)
         socket.emit('adduser', '{{session.username}}');
