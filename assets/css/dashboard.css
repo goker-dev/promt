@@ -274,13 +274,43 @@ text-overflow: ellipsis;
 table.chat {
     height: calc(100% - 60px);
 }
+table.chat a {
+    cursor: pointer;
+}
+table.chat ul {
+    padding: 0;
+    list-style: none;
+}
+table.chat li {
+    padding: 3px 5px;
+}
+table.chat li a {
+    text-decoration: none;
+}
+table.chat #windows {
+    overflow: hidden;
+}
+table.window {
+    position: absolute;
+    top: 100%;
+    left: 8px;
+    width: 100%;
+    height: 100%;
+}
+table.window-show {
+    top: 8px;
+    display: table;
+}
 table.chat td {
     position: relative;
 }
 .conversation {
     width: 100%;
-    height: calc(100% - 50px);
-    border: 1px solid #eee;
+    height: 100%;
+    overflow: auto;
+}
+td.input {
+    height: 50px;
 }
 .chat input {
     position: absolute;
@@ -292,3 +322,9 @@ table.chat td {
     line-height: 40px;
 }
 
+#conversations .highlight {
+    background: #72bbfa;
+}
+#conversations .highlight a {
+    color: #fff;
+}

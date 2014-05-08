@@ -1,51 +1,107 @@
 <legend>Chat</legend>
 <table class="table table-bordered chat">
     <tr>
-        <td class="col-sm-2">
-            <legend>Rooms</legend>
-            <ul id="rooms" class="nav nav-sidebar rooms">
-                <li><a data-room="design">Design</a>
-                </li>
-                <li><a data-room="development">Development</a>
-                </li>
-                <li><a data-room="general">General</a>
-                </li>
-            </ul>
+        <td id="windows">
+            <table id="server" class="table table-bordered window window-show">
+                <tr>
+                    <td>
+                        <div class="conversation"></div>
+                    </td>
+                    <td class="col-sm-2">
+                        <legend>Rooms</legend>
+                        <ul id="rooms" class="rooms"></ul>
+                    </td>
+                </tr>
+            </table>
         </td>
-        <td>
-            <div id="conversation" class="conversation"></div>
+        <td class="col-sm-2" rowspan="2">
+            <a onclick="getWindow('server')">
+                <legend>Server</legend>
+            </a>
+            <legend>Conversations</legend>
+            <ul id="conversations" class="conversations"></ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="input">
             <input id="input" type="text">
         </td>
     </tr>
 </table>
-<div class="clearfix"></div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    console.log(location.hostname);
+    var username = '{{session.username}}';
+    var active = '';
+
     var socket = io.connect('http://' + location.hostname + ':8082');
     socket.on('connect', function () {
-        // call the server-side function 'adduser' and send one parameter (value of prompt)
-        socket.emit('adduser', '{{session.username}}');
+        socket.emit('adduser', username);
     });
 
-    function switchRoom(room) {
-        socket.emit('switchRoom', room);
+    function addWindow(ID, isPrivate, message) {
+        var html =
+            '<table id="' + ID + '" class="table table-bordered window">' + '<tr>' + '<td>' + '<div class="conversation">' + (message ? message : '') + '</div>' + '</td>'
+
+        +(!isPrivate ? '<td class="col-sm-2">' + '<legend>People</legend>' + ' <ul class="people"></ul>' + '</td>' : '') + '</tr>' + '</table>';
+        $('#windows').append(html);
+        if (!$('#conversations .' + ID).length)
+            $('#conversations').append('<li class="' + ID + '"><a onclick="getWindow(\'' + ID + '\')">' + ID + '</a></li>');
+
     }
+
+    function getWindow(ID) {
+        active = ID;
+        $('#conversations .' + ID).removeClass('highlight');
+        $('#windows .window-show').removeClass('window-show');
+        $('#' + ID).addClass('window-show');
+    }
+
+    function joinRoom(room) {
+        addWindow(room, 0);
+        getWindow(room);
+        socket.emit('joinRoom', room);
+    }
+
+    function privateRoom(user) {
+        addWindow(user, 1);
+        getWindow(user);
+        socket.emit('privateRoom', user);
+    }
+
     window.onload = function () {
 
-        // listener, whenever the server emits 'updatechat', this updates the chat body
-        socket.on('updatechat', function (username, data) {
-            $('#conversation').append('<b>' + username + ':</b> ' + data + '<br>');
+        socket.on('serverlog', function (username, data) {
+            $('#server .conversation')
+                .append('<b>' + username + ':</b> ' + data + '<br>')
+                .scrollTop(100000000000000000);
         });
 
-        // listener, whenever the server emits 'updaterooms', this updates the room the client is in
-        socket.on('updaterooms', function (rooms, current_room) {
+        socket.on('chatlog', function (room, username, data) {
+            var el = $('#' + room);
+            if (!el.length)
+                addWindow(room, 1, '<b>' + username + ':</b> ' + data + '<br>');
+            else
+                el.find('.conversation')
+                .append('<b>' + username + ':</b> ' + data + '<br>')
+                .scrollTop(100000000000000000);
+            if (room != active)
+                $('#conversations .' + room).addClass('highlight');
+        });
+
+        socket.on('updaterooms', function (rooms) {
             $('#rooms').empty();
             $.each(rooms, function (key, value) {
-                if (value == current_room) {
-                    $('#rooms').append('<li>' + value + '</li>');
+                $('#rooms').append('<li><a onclick="joinRoom(\'' + value + '\')">' + value + '</a></li>');
+            });
+        });
+        socket.on('updatepeople', function (room, people) {
+            $('#' + room + ' .people').empty();
+            $.each(people, function (key, value) {
+                if (value == username) {
+                    $('#' + room + ' .people').append('<li>' + value + '</li>');
                 } else {
-                    $('#rooms').append('<li><a href="#" onclick="switchRoom(\'' + value + '\')">' + value + '</a></li>');
+                    $('#' + room + ' .people').append('<li><a onclick="privateRoom(\'' + value + '\')">' + value + '</a></li>');
                 }
             });
         });
@@ -53,9 +109,9 @@
         $('#input').on('keydown', function (e) {
             if (e.keyCode == 13) {
                 var message = $(this).val();
+                if (!message.length || !active) return;
                 $(this).val('');
-                // tell server to execute 'sendchat' and send along one parameter
-                socket.emit('sendchat', message);
+                socket.emit('sendchat', active, message);
             }
         });
     }
